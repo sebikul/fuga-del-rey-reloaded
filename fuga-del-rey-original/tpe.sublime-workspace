@@ -1,0 +1,508 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"ret",
+				"retval"
+			],
+			[
+				"JU",
+				"JUEGO_QUIT"
+			],
+			[
+				"def",
+				"define"
+			],
+			[
+				"get",
+				"get_full_path"
+			],
+			[
+				"t_",
+				"t_juego"
+			],
+			[
+				"jugad",
+				"jugadores"
+			],
+			[
+				"jugado",
+				"jugador"
+			],
+			[
+				"size",
+				"sizeof"
+			],
+			[
+				"gb",
+				"GB_QT4_SOURCES"
+			],
+			[
+				"reve",
+				"reversed_int"
+			],
+			[
+				"Gb",
+				"Gambas"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "\n\nproject(Gambas)\ncmake_minimum_required(VERSION 2.8)\nset(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} \"${CMAKE_SOURCE_DIR}/cmake/Modules/\")\n\n\nINCLUDE(FeatureSummary)\nINCLUDE(CMakeDependentOption)\nINCLUDE(FindPkgConfig)\n\nINCLUDE(\"GBInit\")\n\nFIND_PACKAGE(Subversion)\n  IF(SUBVERSION_FOUND AND EXISTS \".svn\")\n    Subversion_WC_INFO(${PROJECT_SOURCE_DIR} Project)\n    \n    set(TRUNK_VERSION Project_WC_REVISION)\n    \n    MESSAGE(\"Current revision is ${Project_WC_REVISION}\")\n    \n  ELSE()\n\n      set(TRUNK_VERSION 0)\n\nENDIF(SUBVERSION_FOUND AND EXISTS \".svn\")\n\n\n\n  \nset(GAMBAS_FULL_VERSION 0x03040090)\n\nset(GAMBAS_FULL_VERSION_STRING 3.4)\n\nset(GAMBAS_MINOR_VERSION 4)\n\nset(GAMBAS_PCODE_VERSION 0x03050000)\nset(GAMBAS_PCODE_VERSION_MIN 0x03000000)\n\nset(GAMBAS_VERSION 3)\n\nset(GAMBAS_VERSION_STRING 3)\n\n\n#SET(CMAKE_INSTALL_PREFIX \"/usr\" CACHE PATH \"Gambas install prefix\" )\n\n\n#Macro to enable components\nMACRO(INIT_COMPONENT COMPONENT_NAME)\n\n  SET(GB_COMPONENT_NAME ${COMPONENT_NAME})\n\n	OPTION(WITH_${GB_COMPONENT_NAME} ${GB_COMPONENT_NAME} ON)\n\n	IF(WITH_${GB_COMPONENT_NAME})\n\n		add_subdirectory(\"${GB_COMPONENT_NAME}/src\")\n\n	ENDIF(WITH_${GB_COMPONENT_NAME})\n			\n	ADD_FEATURE_INFO(${GB_COMPONENT_NAME} WITH_${GB_COMPONENT_NAME} \"\")\n\nENDMACRO(INIT_COMPONENT)\n\n\n\n#Macro to enable subcomponents\nMACRO(INIT_SUBCOMPONENT COMPONENT_NAME SUBCOMPONENT_NAME)\n\n  SET(GB_COMPONENT_NAME \"${COMPONENT_NAME}.${SUBCOMPONENT_NAME}\")\n\n  CMAKE_DEPENDENT_OPTION(WITH_${GB_COMPONENT_NAME} ${GB_COMPONENT_NAME} ON  \"WITH_${COMPONENT_NAME}\" OFF)\n\n  IF(WITH_${GB_COMPONENT_NAME})\n\n    add_subdirectory(\"${COMPONENT_NAME}/src/${SUBCOMPONENT_NAME}\")\n\n  ENDIF(WITH_${GB_COMPONENT_NAME})\n      \n  ADD_FEATURE_INFO(${GB_COMPONENT_NAME} WITH_${GB_COMPONENT_NAME} \"\")\n\nENDMACRO(INIT_SUBCOMPONENT)\n\n\nMACRO(GB_INSTALL_COMPONENT COMPONENT_NAME)\n\n  SET(GB_COMPONENT_NAME ${COMPONENT_NAME})\n\n  OPTION(WITH_${GB_COMPONENT_NAME} ${GB_COMPONENT_NAME} ON)\n\n  IF(WITH_${GB_COMPONENT_NAME})\n\n    add_subdirectory(\"${GB_COMPONENT_NAME}/src\")\n\n  ENDIF(WITH_${GB_COMPONENT_NAME})\n      \n  ADD_FEATURE_INFO(${GB_COMPONENT_NAME} WITH_${GB_COMPONENT_NAME} \"\")\n\nENDMACRO(INIT_SUBCOMPONENT)\n\n\nconfigure_file (config.h.in config.h)\n\ninclude_directories(\"${PROJECT_BINARY_DIR}\")\n\ninclude_directories (\"${PROJECT_SOURCE_DIR}/main/share\")\n\nadd_subdirectory(main)\n\nINIT_COMPONENT(gb.compress.bzlib2)\nINIT_COMPONENT(gb.compress.zlib)\n\nINIT_COMPONENT(gb.db.mysql)\nINIT_COMPONENT(gb.db.odbc)\nINIT_COMPONENT(gb.db.postgresql)\n# #add_subdirectory(src/gb.db.sqlite2)\nINIT_COMPONENT(gb.db.sqlite3)\nINIT_COMPONENT(gb.net)\nINIT_COMPONENT(gb.net.curl)\nINIT_COMPONENT(gb.net.smtp)\nINIT_COMPONENT(gb.mime)\n\nINIT_COMPONENT(gb.qt4)\nINIT_SUBCOMPONENT(gb.qt4 ext)\nINIT_SUBCOMPONENT(gb.qt4 opengl)\nINIT_SUBCOMPONENT(gb.qt4 webkit)\n\nINIT_COMPONENT(gb.pcre)\nINIT_COMPONENT(gb.sdl)\nINIT_COMPONENT(gb.sdl.sound)\nINIT_COMPONENT(gb.libxml)\n\nINIT_COMPONENT(gb.xml)\nINIT_SUBCOMPONENT(gb.xml html)\nINIT_SUBCOMPONENT(gb.xml xslt)\n\nINIT_COMPONENT(gb.v4l)\nINIT_COMPONENT(gb.crypt)\n\nINIT_COMPONENT(gb.gtk)\nINIT_SUBCOMPONENT(gb.gtk opengl)\n\nINIT_COMPONENT(gb.opengl)\nINIT_SUBCOMPONENT(gb.opengl glsl)\nINIT_SUBCOMPONENT(gb.opengl glu)\nINIT_SUBCOMPONENT(gb.opengl sge)\n\nINIT_COMPONENT(gb.desktop)\n#INIT_COMPONENT(gb.pdf)\nINIT_COMPONENT(gb.cairo)\nINIT_COMPONENT(gb.image.io)\nINIT_COMPONENT(gb.image.imlib)\nINIT_COMPONENT(gb.dbus)\nINIT_COMPONENT(gb.gsl)\nINIT_COMPONENT(gb.gmp)\nINIT_COMPONENT(gb.ncurses)\nINIT_COMPONENT(gb.media)\nINIT_COMPONENT(gb.jit)\n#add_subdirectory(src/gb.httpd)\n\nfeature_summary(WHAT ALL\n                   VAR enabledFeaturesText)\n   message(STATUS \"${enabledFeaturesText}\")\n\n\ninclude (InstallRequiredSystemLibraries)\nset (CPACK_RESOURCE_FILE_LICENSE  \"${CMAKE_CURRENT_SOURCE_DIR}/COPYING\")\n#set (CPACK_PACKAGE_VERSION_MAJOR \"${Tutorial_VERSION_MAJOR}\")\n#set (CPACK_PACKAGE_VERSION_MINOR \"${Tutorial_VERSION_MINOR}\")\ninclude (CPack)",
+			"file": "/home/sebi/Builds/gambas3-cmake/CMakeLists.txt",
+			"file_size": 3595,
+			"file_write_time": 1381700385000000,
+			"settings":
+			{
+				"buffer_size": 3855,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 332.0,
+		"selected_items":
+		[
+		],
+		"width": 392.0
+	},
+	"console":
+	{
+		"height": 0.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/sebi/Proyectos del Colegio/ITBA/PI/tablero.h",
+		"/home/sebi/Proyectos del Colegio/ITBA/PI/tablero.c",
+		"/home/sebi/Proyectos del Colegio/ITBA/PI/main.c",
+		"/home/sebi/Proyectos del Colegio/ITBA/PI/Makefile",
+		"/home/sebi/Proyectos del Colegio/ITBA/PI/getnum.c",
+		"/home/sebi/Descargas/main.c",
+		"/home/sebi/Proyectos del Colegio/ITBA/PI/tpe.sublime-project",
+		"/home/sebi/Builds/gambas3-cmake/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/gbx/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/gbc/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.crypt/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/cmake/Modules/FindLibintl.cmake",
+		"/home/sebi/Builds/gambas3-cmake/cmake/Modules/FindIconv.cmake",
+		"/home/sebi/Builds/gambas3-cmake/cmake/Modules/FindGStreamer.cmake",
+		"/home/sebi/Builds/gambas3-cmake/gb.libxml/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/cmake/Modules/GBInit.cmake",
+		"/home/sebi/Builds/gambas3-cmake/main/share/gb_replace.h",
+		"/home/sebi/Builds/gambas3-cmake/main/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/build/config.h",
+		"/home/sebi/Builds/gambas3-cmake/main/gbx/gbx_regexp.h",
+		"/home/sebi/Builds/gambas3-cmake/gb.cairo/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.jit/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.db.postgresql/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.xml/src/xslt/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.xml/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake-nosvn/main/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.qt4/src/webkit/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.sdl/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.v4l/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.sdl.sound/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.xml/src/html/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.qt4/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.qt4/src/opengl/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.pcre/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.pdf/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.qt4/src/ext/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.gmp/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.dbus/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.mime/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.db.mysql/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.db.sqlite3/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.ncurses/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.gtk/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.gtk/src/opengl/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.net.curl/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.image.imlib/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.net.smtp/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.media/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.gsl/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.opengl/src/glsl/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.opengl/src/sge/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.opengl/src/glu/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.opengl/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.image.io/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.net/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.httpd/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.gtk/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.desktop/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.desktop/src/gnome/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.db.odbc/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.compress.zlib/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.compress.bzlib2/src/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.compress.bzlib2/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.cairo/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.crypt/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.compress.zlib/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.db.postgresql/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.db.odbc/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.db.mysql/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/clipper/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/draw/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/eval/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/geom/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/gui/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/gui.opengl/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/image/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/image.effect/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/option/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/signal/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/vb/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/compress/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/data/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/db/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/debug/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/complex/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/lib/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.httpd/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.ncurses/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.jit/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.media/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/cmake/Modules/FindGSL.cmake",
+		"/home/sebi/Builds/gambas3-cmake/cmake/Modules/FindGMP.cmake",
+		"/home/sebi/Descargas/FindGMP.cmake",
+		"/home/sebi/Builds/gambas3-cmake/gb.gmp/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.dbus/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.gsl/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.image.imlib/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.image.io/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.pdf/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3/main/share/gb_replace.h",
+		"/home/sebi/Builds/gambas3-cmake/main/share/gb_replace_temp.h",
+		"/home/sebi/Builds/gambas3-cmake-nosvn/main/gbc/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake-nosvn/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/main/gbx/gb_file.h",
+		"/home/sebi/Builds/gambas3-cmake/main/gbc/gb_file.h",
+		"/home/sebi/Builds/gambas3-cmake/gb.opengl/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.desktop/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.desktop/src/desktop.h",
+		"/home/sebi/Builds/gambas3-cmake/gb.desktop/src/main.h",
+		"/home/sebi/Builds/gambas3-cmake/main/share/gb_file_temp.h",
+		"/home/sebi/Builds/gambas3-cmake/main/share/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.qt4/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/cmake/Modules/FindCrypt.cmake",
+		"/home/sebi/Builds/gambas3-cmake/cmake/Modules/FindXcursor.cmake",
+		"/home/sebi/Builds/gambas3-cmake/cmake/Modules/LibFindMacros.cmake",
+		"/home/sebi/Builds/gambas3-cmake/cmake/FindV4L.cmake",
+		"/home/sebi/Builds/gambas3-cmake/gb.v4l/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.xml/src/gbinterface.h",
+		"/home/sebi/Builds/gambas3-cmake/gb.libxml/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.xml/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/cmake/FindXcursor.cmake",
+		"/home/sebi/Builds/gambas3-cmake/gb.sdl.sound/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/cmake/FindPCRE.cmake",
+		"/home/sebi/Builds/gambas3-cmake/gb.sdl/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.pcre/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/cmake/FindSQLite3.cmake",
+		"/home/sebi/Builds/gambas3-cmake/gb.mime/CMakeLists.txt",
+		"/home/sebi/Builds/gambas3-cmake/gb.net.smtp/CMakeLists.txt"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": true,
+		"find_history":
+		[
+			"casillero",
+			"ERROR_JUGADA_VOID",
+			"miJuego",
+			"name",
+			"tablero_max",
+			"ndef",
+			"\n",
+			" ",
+			"GB_COMPONENT",
+			"GB_COMPONENT_NAME",
+			"DBUS",
+			"GB_CAIRO",
+			"GB_DB_MYSQL",
+			"GB_CRYPT",
+			"GB_COMPRESS_BZLIB2",
+			"GB_COMPRESS_ZLIB",
+			"COMPONENT_NAME",
+			"(",
+			"WITH_GB_COMPRESS_BZLIB2",
+			"COMPONENT_NAME",
+			"h",
+			" ",
+			"\n\n										",
+			" ",
+			" \\",
+			"media",
+			" ",
+			"\n\n										",
+			" ",
+			" \\",
+			"GSL_FOUND",
+			"CURSES_HAVE_NCURSES_NCURSES_H",
+			"CURSES_HAVE_NCURSES_H",
+			"\n\n										",
+			" ",
+			" \\",
+			"CURSES_HAVE_NCURSES_NCURSES_H",
+			"gsl",
+			"MESSAGE",
+			"gsl",
+			"\n\n									",
+			" ",
+			" \\",
+			"GSL_FOUND",
+			"\n\n										",
+			" ",
+			" \\",
+			"\n										\\\n	",
+			" ",
+			"GDK_PIXBUF",
+			" ",
+			"GDK_PIXBUF",
+			" ",
+			"POPPLER",
+			" ",
+			"opengl",
+			" ",
+			"\n",
+			" ",
+			" \\",
+			"\n\n											",
+			" ",
+			" \\",
+			"sge",
+			" ",
+			" \\",
+			"\n\n											",
+			" ",
+			"\\",
+			"\n\n										",
+			" ",
+			"\\",
+			"\n			\n			",
+			" ",
+			"(\"${",
+			"\n\n							",
+			" ",
+			" \\",
+			"_SOURCE_DIR",
+			"\n									\n									",
+			" ",
+			"\\",
+			"Magick++",
+			"CRYPT",
+			"LIBXML2",
+			"LIBXML2_LIBRARIES",
+			"IBXML2",
+			"LIBXML2",
+			" ",
+			"\n\n								",
+			" ",
+			"\\",
+			"\nmessage(\"Initializing <main/gb.libxml>\")",
+			" ",
+			"\\",
+			" ",
+			"\n\n								",
+			" ",
+			" \\",
+			"sound",
+			"\n\n								",
+			" ",
+			"\\",
+			" ",
+			"cwebhittest.cpp",
+			" ",
+			"\\",
+			"ext",
+			" ",
+			"\n									\n									",
+			"\n									\n\n\n									",
+			" ",
+			"\\",
+			"\n\n									",
+			"^.*(moc.cpp)",
+			"^.*\\.(h)$",
+			"\n\n									",
+			"^.*\\.cpp$",
+			"\n\n									",
+			"^.*moc.*$",
+			"db.mysql",
+			"\n\n\n									",
+			" ",
+			"\\",
+			"net.smtp",
+			"\n\n\n									",
+			" ",
+			"\\"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": true,
+		"replace_history":
+		[
+			"LIBCRYPT",
+			"",
+			"<th>DIA 1 LUNES 12 DE AGOSTO</th>",
+			"<th>ETAPA CLASIFICATORIA</th>",
+			" <th>HORARIOS</th>",
+			"<th>APELLIDO</th>",
+			"<th>NOMBRE</th>",
+			"\\n",
+			"\\n\\n",
+			"<tr>",
+			"",
+			"<td>",
+			"",
+			"2.3",
+			"\"Module\": {\n      \"Version\": 1,\n      \"URL\": \"http:\\/\\/files.mundusproject.org\\/module-icons\\/Chromium.png\"\n    },\n\n    \"Icon\": {",
+			"",
+			"\"",
+			".png\"}",
+			"\"Icon\": {\"Version\" : 1, \"URL\": ",
+			".png\"}",
+			"{\"Version\" : 1, \"URL\": ",
+			"Icon",
+			"\":",
+			"",
+			"\\n'",
+			" ' +\\n",
+			"",
+			" ",
+			"",
+			"\\n",
+			"\\",
+			"\\n"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/home/sebi/Builds/gambas3-cmake/CMakeLists.txt",
+					"settings":
+					{
+						"buffer_size": 3855,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1757,
+								1757
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Sublime-CMakeLists-master/CMake.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 855.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 0.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.exec":
+	{
+		"height": 100.0
+	},
+	"replace":
+	{
+		"height": 62.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 178.0,
+	"status_bar_visible": true
+}
