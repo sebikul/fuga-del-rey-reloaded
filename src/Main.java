@@ -1,11 +1,11 @@
-import models.Board;
+import models.Game;
 
 
 
 public class Main {
 
 	public static void main(String[] args) {
-		Board board=new Board(16);
+		Game board=new Game(17);
 		
 		System.out.println(board);
 
