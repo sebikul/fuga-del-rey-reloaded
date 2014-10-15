@@ -6,23 +6,11 @@ import exceptions.MovimientoInvalidoException;
 
 public class Game {
 
-	private char[][] tablero;
+	private Ficha[][] tablero;
 
 	private int size;
 
-	private int turno = JUGADOR_ENEMIGO;
-
-	static private char TABLERO_CASILLERO_VACIO = ' ';
-
-	static private int JUGADOR_ENEMIGO = 0;
-	static private int JUGADOR_GUARDIAS = 1;
-
-	static private char TABLERO_TRONO = 'T';
-	static private char TABLERO_CASTILLO = 'C';
-
-	static private char TABLERO_REY = 'K';
-	static private char TABLERO_GUARDIA = 'G';
-	static private char TABLERO_ENEMIGO = 'E';
+	private Turno turno = Turno.ENEMIGOS;
 
 	public Game(int boardSize) {
 
@@ -33,18 +21,27 @@ public class Game {
 
 		this.size = boardSize;
 
-		this.tablero = new char[size][];
+		this.tablero = new Ficha[size][];
 
 		for (int i = 0; i < size; i++) {
 
-			tablero[i] = new char[size];
+			tablero[i] = new Ficha[size];
 			for (int j = 0; j < size; j++) {
-				tablero[i][j] = TABLERO_CASILLERO_VACIO;
+				tablero[i][j] = Ficha.VACIO;
+
 			}
 
 		}
 
 		popularTablero();
+
+	}
+
+	public Game(int size, Ficha[][] tablero, Turno turno) {
+
+		this.size = size;
+		this.tablero = tablero;
+		this.turno = turno;
 
 	}
 
@@ -57,38 +54,38 @@ public class Game {
 		int maxIndex = size - 1;
 		int medio = maxIndex / 2;
 
-		tablero[0][0] = tablero[0][maxIndex] = tablero[maxIndex][0] = tablero[maxIndex][maxIndex] = TABLERO_CASTILLO;
+		tablero[0][0] = tablero[0][maxIndex] = tablero[maxIndex][0] = tablero[maxIndex][maxIndex] = Ficha.CASTILLO;
 
-		tablero[medio][medio] = TABLERO_TRONO;
+		tablero[medio][medio] = Ficha.TRONO;
 
-		tablero[1][medio] = TABLERO_ENEMIGO;
-		tablero[medio][1] = TABLERO_ENEMIGO;
+		tablero[1][medio] = Ficha.ENEMIGO;
+		tablero[medio][1] = Ficha.ENEMIGO;
 
-		tablero[maxIndex - 1][medio] = TABLERO_ENEMIGO;
-		tablero[medio][maxIndex - 1] = TABLERO_ENEMIGO;
+		tablero[maxIndex - 1][medio] = Ficha.ENEMIGO;
+		tablero[medio][maxIndex - 1] = Ficha.ENEMIGO;
 
 		int max = esTableroLargo() ? (5 - 1) / 2 : (3 - 1) / 2;
 
 		for (int i = medio; i <= (medio + max); i++) {
 
-			tablero[0][i] = TABLERO_ENEMIGO;
-			tablero[i][0] = TABLERO_ENEMIGO;
+			tablero[0][i] = Ficha.ENEMIGO;
+			tablero[i][0] = Ficha.ENEMIGO;
 
-			tablero[0][maxIndex - i] = TABLERO_ENEMIGO;
-			tablero[maxIndex - i][0] = TABLERO_ENEMIGO;
+			tablero[0][maxIndex - i] = Ficha.ENEMIGO;
+			tablero[maxIndex - i][0] = Ficha.ENEMIGO;
 
-			tablero[maxIndex][i] = TABLERO_ENEMIGO;
-			tablero[i][maxIndex] = TABLERO_ENEMIGO;
+			tablero[maxIndex][i] = Ficha.ENEMIGO;
+			tablero[i][maxIndex] = Ficha.ENEMIGO;
 
-			tablero[maxIndex][maxIndex - i] = TABLERO_ENEMIGO;
-			tablero[maxIndex - i][maxIndex] = TABLERO_ENEMIGO;
+			tablero[maxIndex][maxIndex - i] = Ficha.ENEMIGO;
+			tablero[maxIndex - i][maxIndex] = Ficha.ENEMIGO;
 
 		}
 
 		for (int i = medio - 1; i <= medio + 1; i++) {
 			for (int j = medio - 1; j <= medio + 1; j++) {
 				if (i != medio || j != medio) {
-					tablero[i][j] = TABLERO_GUARDIA;
+					tablero[i][j] = Ficha.GUARDIA;
 				}
 
 			}
@@ -96,10 +93,10 @@ public class Game {
 
 		if (esTableroLargo()) {
 
-			tablero[medio][medio + 2] = TABLERO_GUARDIA;
-			tablero[medio + 2][medio] = TABLERO_GUARDIA;
-			tablero[medio][medio - 2] = TABLERO_GUARDIA;
-			tablero[medio - 2][medio] = TABLERO_GUARDIA;
+			tablero[medio][medio + 2] = Ficha.GUARDIA;
+			tablero[medio + 2][medio] = Ficha.GUARDIA;
+			tablero[medio][medio - 2] = Ficha.GUARDIA;
+			tablero[medio - 2][medio] = Ficha.GUARDIA;
 
 		}
 
@@ -128,8 +125,8 @@ public class Game {
 			for (int j = 0; j < size; j++) {
 
 				str += (j == 0 ? "" : "    ")
-						+ (tablero[i][j] == TABLERO_CASILLERO_VACIO ? " "
-								: tablero[i][j]) + " ";
+						+ (tablero[i][j] == Ficha.VACIO ? " " : tablero[i][j]
+								.getToken()) + " ";
 
 			}
 			str += "|\n\n";
@@ -145,7 +142,8 @@ public class Game {
 
 	private boolean puntoEsValido(Punto point) {
 
-		return point.getFila() < size && point.getColumna() < size;
+		return point.getFila() >= 0 && point.getFila() < size
+				&& point.getColumna() < size && point.getColumna() >= 0;
 
 	}
 
@@ -154,18 +152,18 @@ public class Game {
 		if (!puntoEsValido(point))
 			return false;
 
-		char piece = tablero[point.getFila()][point.getColumna()];
+		Ficha ficha = tablero[point.getFila()][point.getColumna()];
 
-		if (piece == TABLERO_CASTILLO) {
+		if (ficha == Ficha.CASTILLO) {
 			return true;
 		}
 
-		if (turno == JUGADOR_GUARDIAS && piece == TABLERO_ENEMIGO) {
+		if (turno == Turno.GUARDIAS && ficha == Ficha.ENEMIGO) {
 			return true;
 		}
 
-		if (turno == JUGADOR_GUARDIAS
-				&& (piece == TABLERO_REY || piece == TABLERO_GUARDIA)) {
+		if (turno == Turno.ENEMIGOS
+				&& (ficha == Ficha.REY || ficha == Ficha.GUARDIA)) {
 			return true;
 		}
 		return false;
@@ -176,17 +174,17 @@ public class Game {
 		if (!puntoEsValido(point))
 			return false;
 
-		char piece = tablero[point.getFila()][point.getColumna()];
+		Ficha ficha = tablero[point.getFila()][point.getColumna()];
 
-		if (piece == TABLERO_CASTILLO) {
+		if (ficha == Ficha.CASTILLO) {
 			return true;
 		}
 
-		if (turno == JUGADOR_GUARDIAS
-				&& (piece == TABLERO_REY || piece == TABLERO_GUARDIA || piece == TABLERO_TRONO))
+		if (turno == Turno.GUARDIAS
+				&& (ficha == Ficha.REY || ficha == Ficha.GUARDIA || ficha == Ficha.TRONO))
 			return true;
 
-		if (turno == JUGADOR_ENEMIGO && piece == TABLERO_ENEMIGO)
+		if (turno == Turno.ENEMIGOS && ficha == Ficha.ENEMIGO)
 			return true;
 
 		return false;
@@ -198,7 +196,7 @@ public class Game {
 
 		int medio = (size - 1) / 2;
 
-		char ficha = tablero[origen.getFila()][origen.getColumna()];
+		Ficha ficha = tablero[origen.getFila()][origen.getColumna()];
 
 		/* El punto esta fuera del tablero */
 		if (!puntoEsValido(origen)) {
@@ -221,7 +219,7 @@ public class Game {
 		}
 
 		/* Verifica si el destino es un castillo y la ficha no es el rey */
-		if (ficha != TABLERO_REY
+		if (ficha != Ficha.REY
 				&& (destino.equals(new Punto(0, 0))
 						|| destino.equals(new Punto(0, size - 1))
 						|| destino.equals(new Punto(size - 1, 0)) || destino
@@ -231,7 +229,7 @@ public class Game {
 		}
 
 		/* Tablero corto y el destino es el trono */
-		if (!esTableroLargo() && ficha == TABLERO_REY
+		if (!esTableroLargo() && ficha == Ficha.REY
 				&& destino.equals(new Punto(medio, medio))) {
 			throw new MovimientoInvalidoException();
 
@@ -255,22 +253,23 @@ public class Game {
 				 * Verifica si el camino esta bloqueado por otra ficha o si es
 				 * el tablero largo y no se es el enemigo
 				 */
-				if (tablero[fila][columna] != TABLERO_CASILLERO_VACIO
+				if (tablero[fila][columna] != Ficha.VACIO
 						|| (esTableroLargo()
-								&& tablero[fila][columna] == TABLERO_TRONO && ficha != TABLERO_ENEMIGO)) {
+								&& tablero[fila][columna] == Ficha.TRONO && ficha != Ficha.ENEMIGO)) {
 					throw new MovimientoBloqueadoException();
 				}
 			}
 
 		}
 
-		// printf("[%d, %d] -> [%d, %d]\n",
-		// origen.fila,origen.columna,destino.fila,destino.columna);
+		System.out.println("[" + origen.getFila() + ", " + origen.getColumna()
+				+ "] -> [" + destino.getFila() + ", " + destino.getColumna()
+				+ "]");
 
 		if (origen.getFila() == medio && origen.getColumna() == medio) {
-			tablero[origen.getFila()][origen.getColumna()] = TABLERO_TRONO;
+			tablero[origen.getFila()][origen.getColumna()] = Ficha.TRONO;
 		} else {
-			tablero[origen.getFila()][origen.getColumna()] = TABLERO_CASILLERO_VACIO;
+			tablero[origen.getFila()][origen.getColumna()] = Ficha.VACIO;
 		}
 
 		tablero[destino.getFila()][destino.getColumna()] = ficha;
@@ -301,7 +300,7 @@ public class Game {
 					// printf("Enemigo en "); PRINT_PUNTO(pos_enemigo);
 					// putchar('\n');
 
-					if (tablero[fila][columna] == TABLERO_REY) {
+					if (tablero[fila][columna] == Ficha.REY) {
 
 						// printf("Detectado rey enemigo en ");
 						// PRINT_PUNTO(pos_enemigo); putchar('\n');
@@ -346,7 +345,7 @@ public class Game {
 
 						/* TODO: vector con fichas capturadas */
 
-						tablero[fila][columna] = TABLERO_CASILLERO_VACIO;
+						tablero[fila][columna] = Ficha.VACIO;
 
 					}
 
@@ -356,13 +355,13 @@ public class Game {
 
 		}
 
-		if (turno == JUGADOR_GUARDIAS)
+		if (turno == Turno.GUARDIAS)
 
-			turno = JUGADOR_ENEMIGO;
+			turno = Turno.ENEMIGOS;
 
-		else if (turno == JUGADOR_ENEMIGO)
+		else if (turno == Turno.ENEMIGOS)
 
-			turno = JUGADOR_GUARDIAS;
+			turno = Turno.GUARDIAS;
 
 		return 0;
 
