@@ -1,7 +1,6 @@
 package models;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -23,6 +22,12 @@ public class GameFileParser {
 			String firstLine = fileReader.readLine();
 			turno = Turno.fromInt(Integer.valueOf(firstLine));
 		} catch (IOException e) {
+			try {
+				fileReader.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			return null;
 		}
 

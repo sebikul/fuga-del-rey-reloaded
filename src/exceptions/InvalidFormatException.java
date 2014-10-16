@@ -1,5 +1,6 @@
 package exceptions;
 
+@SuppressWarnings("serial")
 public class InvalidFormatException extends Exception {
 
 	private final String lineAt;
