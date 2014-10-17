@@ -1,23 +1,34 @@
 package gui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import models.Ficha;
 import models.Game;
-import exceptions.BoardPointOutOfBoundsException;
-import javax.swing.JPanel;
-import javax.swing.SwingConstants;
+import models.Punto;
+
 import org.eclipse.wb.swing.FocusTraversalOnArray;
+
+import exceptions.BoardPointOutOfBoundsException;
+import exceptions.MovimientoBloqueadoException;
+import exceptions.MovimientoInvalidoException;
 
 public class GraphicalBoard {
 
@@ -26,6 +37,18 @@ public class GraphicalBoard {
 	private TableModel tableModel;
 	private Game game;
 	private JLabel lblJugador;
+	private JPanel panel_1;
+	private JPanel panel;
+	private JLabel lblNewLabel;
+	private JLabel lblNewLabel_1;
+	private JTextField txtFOrigen;
+	private JTextField txtFDestino;
+	private JLabel lblColumnaOrigen;
+	private JLabel lblColumnaDestino;
+	private JTextField txtCOrigen;
+	private JTextField txtCDestino;
+	private JButton btnMover;
+	private JButton btnLimpiar;
 
 	/**
 	 * Create the application.
@@ -49,20 +72,27 @@ public class GraphicalBoard {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 450, 300);
+		frame.setResizable(false);
+
+		frame.setBounds(100, 100, 550, 550);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		table = new JTable();
+		table.setRowSelectionAllowed(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setFillsViewportHeight(true);
 		table.setBorder(null);
 		table.setModel(tableModel);
 		table.setDefaultRenderer(Ficha.class, new ColorRenderer());
 
-		frame.getContentPane().add(table, BorderLayout.CENTER);
+		frame.getContentPane().setLayout(
+				new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 
-		JPanel panel = new JPanel();
-		frame.getContentPane().add(panel, BorderLayout.SOUTH);
+		frame.getContentPane().add(table);
+
+		panel = new JPanel();
+
+		frame.getContentPane().add(panel);
 
 		JLabel lblTurnoDe = new JLabel("Turno de: ");
 		lblTurnoDe.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -72,7 +102,93 @@ public class GraphicalBoard {
 		panel.add(lblJugador);
 		panel.setFocusTraversalPolicy(new FocusTraversalOnArray(
 				new Component[] { lblTurnoDe }));
+
+		panel_1 = new JPanel();
+		frame.getContentPane().add(panel_1);
+		panel_1.setLayout(new GridLayout(3, 4, 0, 0));
+
+		lblNewLabel = new JLabel("Fila origen");
+		panel_1.add(lblNewLabel);
+
+		txtFOrigen = new JTextField();
+		panel_1.add(txtFOrigen);
+		txtFOrigen.setColumns(10);
+
+		lblColumnaOrigen = new JLabel("Columna origen");
+		panel_1.add(lblColumnaOrigen);
+
+		txtCOrigen = new JTextField();
+		panel_1.add(txtCOrigen);
+		txtCOrigen.setColumns(10);
+
+		lblNewLabel_1 = new JLabel("Fila destino");
+		panel_1.add(lblNewLabel_1);
+
+		txtFDestino = new JTextField();
+		txtFDestino.setColumns(10);
+		panel_1.add(txtFDestino);
+
+		lblColumnaDestino = new JLabel("Columna destino");
+		panel_1.add(lblColumnaDestino);
+
+		txtCDestino = new JTextField();
+		panel_1.add(txtCDestino);
+		txtCDestino.setColumns(10);
+
+		btnMover = new JButton("Mover");
+		btnMover.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+
+				try {
+					int filaOrigen = Integer.parseInt(txtFOrigen.getText());
+					int columnaOrigen = Integer.parseInt(txtCOrigen.getText());
+					int filaDestino = Integer.parseInt(txtFDestino.getText());
+					int columnaDestino = Integer.parseInt(txtCDestino.getText());
+
+					game.mover(new Punto(filaOrigen, columnaOrigen), new Punto(
+							filaDestino, columnaDestino));
+
+				} catch (NumberFormatException | BoardPointOutOfBoundsException e1) {
+					JOptionPane.showMessageDialog(null,
+							"Las coordenadas ingresadas son invalidas",
+							"Error de formato", JOptionPane.ERROR_MESSAGE);
+					return;
+
+				} catch (MovimientoBloqueadoException e1) {
+
+					JOptionPane.showMessageDialog(null,
+							"El movimiento esta bloqueado.",
+							"Error de movimiento", JOptionPane.ERROR_MESSAGE);
+					return;
+
+				} catch (MovimientoInvalidoException e1) {
+					JOptionPane.showMessageDialog(null,
+							"El movimiento es invalido.",
+							"Error de movimiento", JOptionPane.ERROR_MESSAGE);
+					return;
+				}
+
+				((AbstractTableModel) table.getModel()).fireTableDataChanged();
+				
+				limpiarCoordenadas();
+
+			}
+		});
+		panel_1.add(btnMover);
+
+		btnLimpiar = new JButton("Limpiar");
+		panel_1.add(btnLimpiar);
+
+		table.setRowHeight(400 / table.getModel().getRowCount());
+
 		frame.setVisible(true);
+	}
+
+	private void limpiarCoordenadas() {
+		txtCDestino.setText("");
+		txtCOrigen.setText("");
+		txtFDestino.setText("");
+		txtFOrigen.setText("");
 	}
 
 	@SuppressWarnings("serial")
