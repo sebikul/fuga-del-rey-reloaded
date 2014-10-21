@@ -2,12 +2,12 @@ package gui;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -22,6 +22,7 @@ import javax.swing.table.TableModel;
 
 import models.Ficha;
 import models.Game;
+import models.Jugador;
 import models.Punto;
 
 import org.eclipse.wb.swing.FocusTraversalOnArray;
@@ -47,8 +48,6 @@ public class GraphicalBoard {
 	private JLabel lblColumnaDestino;
 	private JTextField txtCOrigen;
 	private JTextField txtCDestino;
-	private JButton btnMover;
-	private JButton btnLimpiar;
 
 	/**
 	 * Create the application.
@@ -105,7 +104,7 @@ public class GraphicalBoard {
 
 		panel_1 = new JPanel();
 		frame.getContentPane().add(panel_1);
-		panel_1.setLayout(new GridLayout(3, 4, 0, 0));
+		panel_1.setLayout(new GridLayout(2, 4, 0, 0));
 
 		lblNewLabel = new JLabel("Fila origen");
 		panel_1.add(lblNewLabel);
@@ -135,49 +134,77 @@ public class GraphicalBoard {
 		panel_1.add(txtCDestino);
 		txtCDestino.setColumns(10);
 
-		btnMover = new JButton("Mover");
-		btnMover.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+		table.addMouseListener(new MouseAdapter() {
 
-				try {
-					int filaOrigen = Integer.parseInt(txtFOrigen.getText());
-					int columnaOrigen = Integer.parseInt(txtCOrigen.getText());
-					int filaDestino = Integer.parseInt(txtFDestino.getText());
-					int columnaDestino = Integer.parseInt(txtCDestino.getText());
+			private boolean isOrigenSet = false;
 
-					game.mover(new Punto(filaOrigen, columnaOrigen), new Punto(
-							filaDestino, columnaDestino));
+			@Override
+			public void mouseClicked(MouseEvent e) {
 
-				} catch (NumberFormatException | BoardPointOutOfBoundsException e1) {
-					JOptionPane.showMessageDialog(null,
-							"Las coordenadas ingresadas son invalidas",
-							"Error de formato", JOptionPane.ERROR_MESSAGE);
-					return;
+				int fila = table.rowAtPoint(e.getPoint());
+				int columna = table.columnAtPoint(e.getPoint());
 
-				} catch (MovimientoBloqueadoException e1) {
+				if (isOrigenSet == false) {
+					txtCOrigen.setText("" + columna);
+					txtFOrigen.setText("" + fila);
+					isOrigenSet = true;
+				} else {
+					txtCDestino.setText("" + columna);
+					txtFDestino.setText("" + fila);
+					isOrigenSet = false;
 
-					JOptionPane.showMessageDialog(null,
-							"El movimiento esta bloqueado.",
-							"Error de movimiento", JOptionPane.ERROR_MESSAGE);
-					return;
+					try {
+						int filaOrigen = Integer.parseInt(txtFOrigen.getText());
+						int columnaOrigen = Integer.parseInt(txtCOrigen
+								.getText());
+						int filaDestino = Integer.parseInt(txtFDestino
+								.getText());
+						int columnaDestino = Integer.parseInt(txtCDestino
+								.getText());
 
-				} catch (MovimientoInvalidoException e1) {
-					JOptionPane.showMessageDialog(null,
-							"El movimiento es invalido.",
-							"Error de movimiento", JOptionPane.ERROR_MESSAGE);
-					return;
+						Jugador result = game.mover(new Punto(filaOrigen,
+								columnaOrigen), new Punto(filaDestino,
+								columnaDestino));
+
+						if (result != null) {
+							JOptionPane.showMessageDialog(null, "El jugador "
+									+ result + " ha ganado", "Hay un ganador!",
+									JOptionPane.INFORMATION_MESSAGE);
+						}
+
+					} catch (NumberFormatException
+							| BoardPointOutOfBoundsException e1) {
+						JOptionPane.showMessageDialog(null,
+								"Las coordenadas ingresadas son invalidas",
+								"Error de formato", JOptionPane.ERROR_MESSAGE);
+						return;
+
+					} catch (MovimientoBloqueadoException e1) {
+
+						JOptionPane.showMessageDialog(null,
+								"El movimiento esta bloqueado.",
+								"Error de movimiento",
+								JOptionPane.ERROR_MESSAGE);
+						return;
+
+					} catch (MovimientoInvalidoException e1) {
+						JOptionPane.showMessageDialog(null,
+								"El movimiento es invalido.",
+								"Error de movimiento",
+								JOptionPane.ERROR_MESSAGE);
+						return;
+					}
+
+					((AbstractTableModel) table.getModel())
+							.fireTableDataChanged();
+
+					actualizarTurno();
+					limpiarCoordenadas();
+
 				}
-
-				((AbstractTableModel) table.getModel()).fireTableDataChanged();
-				
-				limpiarCoordenadas();
 
 			}
 		});
-		panel_1.add(btnMover);
-
-		btnLimpiar = new JButton("Limpiar");
-		panel_1.add(btnLimpiar);
 
 		table.setRowHeight(400 / table.getModel().getRowCount());
 
@@ -235,6 +262,8 @@ public class GraphicalBoard {
 				Object fichaObject, boolean isSelected, boolean hasFocus,
 				int row, int column) {
 			Color newColor = Color.WHITE;
+
+			assert fichaObject != null;
 
 			char fichaChar = (char) fichaObject;
 

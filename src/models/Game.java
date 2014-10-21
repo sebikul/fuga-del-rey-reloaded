@@ -10,7 +10,7 @@ public class Game {
 
 	private Ficha[][] tablero;
 
-	private Turno turno = Turno.ENEMIGOS;
+	private Jugador turno = Jugador.ENEMIGO;
 
 	public Game(int boardSize) {
 
@@ -37,7 +37,7 @@ public class Game {
 
 	}
 
-	public Game(int size, Ficha[][] tablero, Turno turno) {
+	public Game(int size, Ficha[][] tablero, Jugador turno) {
 
 		this.size = size;
 		this.tablero = tablero;
@@ -56,11 +56,11 @@ public class Game {
 			return true;
 		}
 
-		if (turno == Turno.GUARDIAS
+		if (turno == Jugador.GUARDIA
 				&& (ficha == Ficha.REY || ficha == Ficha.GUARDIA || ficha == Ficha.TRONO))
 			return true;
 
-		if (turno == Turno.ENEMIGOS && ficha == Ficha.ENEMIGO)
+		if (turno == Jugador.ENEMIGO && ficha == Ficha.ENEMIGO)
 			return true;
 
 		return false;
@@ -77,11 +77,11 @@ public class Game {
 			return true;
 		}
 
-		if (turno == Turno.GUARDIAS && ficha == Ficha.ENEMIGO) {
+		if (turno == Jugador.GUARDIA && ficha == Ficha.ENEMIGO) {
 			return true;
 		}
 
-		if (turno == Turno.ENEMIGOS
+		if (turno == Jugador.ENEMIGO
 				&& (ficha == Ficha.REY || ficha == Ficha.GUARDIA)) {
 			return true;
 		}
@@ -116,25 +116,25 @@ public class Game {
 
 	}
 
-	public Turno getTurno() {
+	public Jugador getTurno() {
 		return turno;
 	}
 
-	public int mover(Punto origen, Punto destino)
-			throws MovimientoBloqueadoException,
-			BoardPointOutOfBoundsException, MovimientoInvalidoException {
+	/*
+	 * * Ejecuta el movimiento de _origen a _destino* Valida el turno, el camino
+	 * y los bloqueos
+	 */
+	public Jugador mover(Punto origen, Punto destino)
+			throws MovimientoInvalidoException, BoardPointOutOfBoundsException,
+			MovimientoBloqueadoException {
 
 		int medio = (size - 1) / 2;
 
 		Ficha ficha = tablero[origen.getFila()][origen.getColumna()];
 
 		/* El punto esta fuera del tablero */
-		if (!puntoEsValido(origen)) {
+		if (!puntoEsValido(origen) || !puntoEsValido(destino)) {
 			throw new BoardPointOutOfBoundsException(origen);
-		}
-
-		if (!puntoEsValido(destino)) {
-			throw new BoardPointOutOfBoundsException(destino);
 		}
 
 		/* La fila ó columna de origen y destino no coinciden */
@@ -145,7 +145,6 @@ public class Game {
 
 		if (!esAliado(origen)) {
 			throw new MovimientoInvalidoException(origen, destino);
-
 		}
 
 		/* Verifica si el destino es un castillo y la ficha no es el rey */
@@ -158,11 +157,24 @@ public class Game {
 
 		}
 
-		/* Tablero corto y el destino es el trono */
-		if (!esTableroLargo() && ficha == Ficha.REY
-				&& destino.equals(new Punto(medio, medio))) {
-			throw new MovimientoInvalidoException(origen, destino);
+		/* Verifica si el destino es un castillo y la ficha es el rey */
+		if (ficha == Ficha.REY
+				&& (destino.equals(new Punto(0, 0))
+						|| destino.equals(new Punto(0, size - 1))
+						|| destino.equals(new Punto(size - 1, 0)) || destino
+							.equals(new Punto(size - 1, size - 1)))) {
+			return Jugador.GUARDIA;
+		}
 
+		/* Chequea que no pueda ir una ficha que no sea el rey al trono */
+		if (ficha != Ficha.REY && destino.equals(new Punto(medio, medio))) {
+			throw new MovimientoInvalidoException(origen, destino);
+		}
+
+		/* La ficha no se puede quedar en el mismo lugar */
+		if (origen.getFila() == destino.getFila()
+				&& origen.getColumna() == destino.getColumna()) {
+			throw new MovimientoInvalidoException(origen, destino);
 		}
 
 		/* Se verifica que el camino este vacio, y sea valido */
@@ -175,27 +187,38 @@ public class Game {
 					: columna >= destino.getColumna(); columna += origen
 					.getColumna() < destino.getColumna() ? 1 : -1) {
 
-				if (origen.equals(new Punto(fila, columna))) {
-					continue;
+				if (!origen.equals(new Punto(fila, columna))) {
+					/*
+					 * Verifica si el camino esta bloqueado por otra ficha o si
+					 * es el tablero largo y no se es el enemigo
+					 */
+
+					Ficha tmpFicha = tablero[fila][columna];
+
+					/*
+					 * Verifica que todo el camino este libre, el caso del trono
+					 * se analiza despues
+					 */
+					if (tmpFicha != Ficha.VACIO && tmpFicha != Ficha.TRONO) {
+						throw new MovimientoBloqueadoException(new Punto(fila,
+								columna));
+					}
+
+					/*
+					 * Verifica que el tablero se a largo y los guardias no
+					 * puedan pasar por el trono
+					 */
+					if (esTableroLargo() && tmpFicha == Ficha.TRONO
+							&& ficha == Ficha.GUARDIA) {
+						throw new MovimientoBloqueadoException(new Punto(fila,
+								columna));
+					}
+
 				}
 
-				/*
-				 * Verifica si el camino esta bloqueado por otra ficha o si es
-				 * el tablero largo y no se es el enemigo
-				 */
-				if (tablero[fila][columna] != Ficha.VACIO
-						|| (esTableroLargo()
-								&& tablero[fila][columna] == Ficha.TRONO && ficha != Ficha.ENEMIGO)) {
-					throw new MovimientoBloqueadoException(new Punto(fila,
-							columna));
-				}
 			}
 
 		}
-
-		System.out.println("[" + origen.getFila() + ", " + origen.getColumna()
-				+ "] -> [" + destino.getFila() + ", " + destino.getColumna()
-				+ "]");
 
 		if (origen.getFila() == medio && origen.getColumna() == medio) {
 			tablero[origen.getFila()][origen.getColumna()] = Ficha.TRONO;
@@ -205,7 +228,7 @@ public class Game {
 
 		tablero[destino.getFila()][destino.getColumna()] = ficha;
 
-		return verificar_bloqueos(destino);
+		return verificarBloqueos(destino);
 
 	}
 
@@ -307,92 +330,103 @@ public class Game {
 
 	}
 
-	int verificar_bloqueos(Punto destino) {
+	/*
+	 * * Verifica si la ficha movida hacia _destino produjo algun bloqueo
+	 */
+	private Jugador verificarBloqueos(Punto destino) {
 
-		int i = 0, fil_aux, col_aux;
+		// int j = 0;
+
+		Punto pos_aliado, pos_enemigo;
 
 		/* Itera sobre los puntos adyacentes */
 		for (int columna = destino.getColumna() - 1; columna <= destino
 				.getColumna() + 1; columna++) {
 			for (int fila = destino.getFila() - 1; fila <= destino.getFila() + 1; fila++) {
 
-				if ((fila != destino.getFila() && columna != destino
-						.getColumna())
-						|| (fila == destino.getFila() && columna == destino
-								.getColumna()))
-					continue;
+				if (!((fila != destino.getFila() && columna != destino
+						.getColumna()) || (fila == destino.getFila() && columna == destino
+						.getColumna()))) {
 
-				/* printf("%d, %d\n", fil,col); */
+					pos_enemigo = new Punto(fila, columna);
 
-				if (esOponente(new Punto(fila, columna))) {
+					if (esOponente(pos_enemigo)) {
 
-					// printf("Enemigo en "); PRINT_PUNTO(pos_enemigo);
-					// putchar('\n');
+						if (tablero[fila][columna] == Ficha.REY) {
 
-					if (tablero[fila][columna] == Ficha.REY) {
+							int bloqueos = 0;
 
-						// printf("Detectado rey enemigo en ");
-						// PRINT_PUNTO(pos_enemigo); putchar('\n');
+							/* Verifica que el rey este rodeado por 4 aliados */
+							for (int col_aux = columna - 1; col_aux <= columna + 1; col_aux++) {
+								for (int fil_aux = fila - 1; fil_aux <= fila + 1; fil_aux++) {
 
-						/* Verifica que el rey este rodeado por 4 aliados */
-						for (col_aux = columna - 1; col_aux <= columna + 1; col_aux++) {
-							for (fil_aux = fila - 1; fil_aux <= fila + 1; fil_aux++) {
+									if (!((fil_aux != fila && col_aux != columna) || (fil_aux == fila && col_aux == columna))) {
 
-								// printf("Analizando [%d, %d]\n",
-								// fil_aux,col_aux);
+										pos_aliado = new Punto(fil_aux, col_aux);
 
-								if ((fil_aux != fila && col_aux != columna)
-										|| (fil_aux == fila && col_aux == columna))
-									continue;
+										if (!puntoEsValido(pos_aliado)
+												|| tablero[pos_aliado.getFila()][pos_aliado
+														.getColumna()] != Ficha.VACIO) {
+											bloqueos++;
+										}
+									}
 
-								if (esAliado(new Punto(fil_aux, col_aux))) {
-									i++;
-									// printf("Rey atacado por ");
-									// PRINT_PUNTO(pos_aliado); putchar('\n');
 								}
 
 							}
 							/* El rey esta rodeado */
-							if (i == 4)
-								return 1;
+							if (bloqueos == 4) {
+								tablero[fila][columna] = Ficha.REYMUERTO;
+								return Jugador.ENEMIGO;
+							}
+
+						} else {
+							/*
+							 * La ficha oponente no es el rey, veo si esta
+							 * capturada
+							 */
+
+							pos_aliado = new Punto(destino.getFila()
+									+ (fila - destino.getFila()) * 2,
+									destino.getColumna()
+											+ (columna - destino.getColumna())
+											* 2);
+
+							if (esAliado(pos_aliado)) {
+
+								tablero[fila][columna] = Ficha.VACIO;
+
+							}
+
 						}
 
-						continue;
 					}
-
-					/* La ficha oponente no es el rey, veo si esta capturada */
-
-					if (esAliado(new Punto(destino.getFila()
-							+ (fila - destino.getFila()) * 2,
-							destino.getColumna()
-									+ (columna - destino.getColumna()) * 2))) {
-
-						// printf("Aliado en "); PRINT_PUNTO(pos_aliado);
-
-						// printf("Ficha en posicion [%d, %d] capturada.\n",
-						// fil,col);
-
-						/* TODO: vector con fichas capturadas */
-
-						tablero[fila][columna] = Ficha.VACIO;
-
-					}
-
 				}
 
 			}
 
 		}
 
-		if (turno == Turno.GUARDIAS)
+		cambiarJugador();
 
-			turno = Turno.ENEMIGOS;
-
-		else if (turno == Turno.ENEMIGOS)
-
-			turno = Turno.GUARDIAS;
-
-		return 0;
+		return null;
 
 	}
+
+	/*
+	 * * Cambia de jugador en la estructura _*juego
+	 */
+	private void cambiarJugador() {
+
+		if (turno == Jugador.GUARDIA) {
+
+			turno = Jugador.ENEMIGO;
+
+		} else if (turno == Jugador.ENEMIGO) {
+
+			turno = Jugador.GUARDIA;
+		}
+
+	}
+
 }

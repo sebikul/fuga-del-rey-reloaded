@@ -16,11 +16,11 @@ public class GameFileParser {
 
 		BufferedReader fileReader = new BufferedReader(file);
 
-		Turno turno;
+		Jugador turno;
 
 		try {
 			String firstLine = fileReader.readLine();
-			turno = Turno.fromInt(Integer.valueOf(firstLine));
+			turno = Jugador.fromInt(Integer.valueOf(firstLine));
 		} catch (IOException e) {
 			try {
 				fileReader.close();

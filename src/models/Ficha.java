@@ -1,7 +1,8 @@
 package models;
 
 public enum Ficha {
-	REY('R'), CASTILLO('C'), TRONO('T'), GUARDIA('G'), ENEMIGO('E'), VACIO(' ');
+	REY('R'), CASTILLO('C'), TRONO('T'), GUARDIA('G'), ENEMIGO('E'), VACIO(' '), REYMUERTO(
+			'*');
 
 	private final char token;
 
@@ -34,6 +35,9 @@ public enum Ficha {
 
 		case ' ':
 			return VACIO;
+
+		case '*':
+			return REYMUERTO;
 
 		default:
 			throw new IllegalArgumentException();
