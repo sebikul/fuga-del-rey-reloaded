@@ -1,7 +1,7 @@
 package models;
 
 public enum Ficha {
-	REY('R'), CASTILLO('C'), TRONO('T'), GUARDIA('G'), ENEMIGO('E'), VACIO(' '), REYMUERTO(
+	REY('R'), CASTILLO('C'), TRONO('T'), GUARDIA('G'), ENEMIGO('N'), VACIO(' '), REYMUERTO(
 			'*');
 
 	private final char token;
@@ -30,9 +30,10 @@ public enum Ficha {
 		case 'G':
 			return GUARDIA;
 
-		case 'E':
+		case 'N':
 			return ENEMIGO;
 
+		case '0':
 		case ' ':
 			return VACIO;
 

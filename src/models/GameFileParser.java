@@ -33,9 +33,10 @@ public class GameFileParser {
 
 		int size = -1;
 
-		Ficha[][] tablero = new Ficha[size][];
 		int i = 0;
 
+		Ficha[][] tablero=null;
+		
 		try {
 			while (fileReader.ready()) {
 
@@ -43,6 +44,7 @@ public class GameFileParser {
 
 				if (size == -1) {
 					size = line.length();
+					tablero = new Ficha[size][];
 				} else if (size != line.length()) {
 					throw new InvalidFormatException(line);
 				}

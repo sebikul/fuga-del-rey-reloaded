@@ -1,5 +1,7 @@
 package models;
 
+import java.util.Arrays;
+
 import exceptions.BoardPointOutOfBoundsException;
 import exceptions.MovimientoBloqueadoException;
 import exceptions.MovimientoInvalidoException;
@@ -35,6 +37,42 @@ public class Game {
 
 		popularTablero();
 
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int medio = (size - 1) / 2;
+
+		int result = 1;
+		result = prime * result + Arrays.hashCode(tablero[0]);
+	
+		result = prime * result + Arrays.hashCode(tablero[medio - 1]);
+		result = prime * result + Arrays.hashCode(tablero[medio]);
+		result = prime * result + Arrays.hashCode(tablero[medio + 1]);
+
+		result = prime * result + Arrays.hashCode(tablero[size - 1]);
+
+		result = prime * result + ((turno == null) ? 0 : turno.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Game other = (Game) obj;
+		if (size != other.size)
+			return false;
+		if (!Arrays.deepEquals(tablero, other.tablero))
+			return false;
+		if (turno != other.turno)
+			return false;
+		return true;
 	}
 
 	public Game(int size, Ficha[][] tablero, Jugador turno) {
@@ -247,6 +285,8 @@ public class Game {
 		tablero[maxIndex - 1][medio] = Ficha.ENEMIGO;
 		tablero[medio][maxIndex - 1] = Ficha.ENEMIGO;
 
+		//
+		// TODO
 		int max = esTableroLargo() ? (5 - 1) / 2 : (3 - 1) / 2;
 
 		for (int i = medio; i <= (medio + max); i++) {

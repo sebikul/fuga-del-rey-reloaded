@@ -1,28 +1,36 @@
-import exceptions.BoardPointOutOfBoundsException;
-import exceptions.MovimientoBloqueadoException;
-import exceptions.MovimientoInvalidoException;
+import java.io.FileNotFoundException;
+
 import models.Game;
-import models.Punto;
+import models.GameFileParser;
+import exceptions.InvalidFormatException;
 
 public class Main {
 
 	public static void main(String[] args) {
-		Game board = new Game(7);
-
-		System.out.println(board);
-
 		try {
-			board.mover(new Punto(2, 0), new Punto(1, 0));
-			System.out.println(board);
-			board.mover(new Punto(2, 2), new Punto(2, 1));
-			System.out.println(board);
-			board.mover(new Punto(1, 0), new Punto(1, 1));
-			System.out.println(board);
-		} catch (MovimientoBloqueadoException | BoardPointOutOfBoundsException
-				| MovimientoInvalidoException e) {
+			Game juegoArchivo = GameFileParser.fromFile(args[1]);
+			System.out.println(juegoArchivo);
+			
+				if(args[2].equals("-maxtime")){
+					
+					System.out.println("Hago la funcion por tiempo de la clase MiniMax con el parametro args[3]");
+				}else if(args[2].equals("-depth")){
+					System.out.println("Llamo a la funcion por profundidad de la clase MiniMax con el parametro args[3]");
+				}else{
+					System.out.println("Parametros incorrectos");
+					System.exit(1);
+				}
+			
+			
+			
+			
+		} catch (FileNotFoundException | InvalidFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+	
+		
 
 	}
 
