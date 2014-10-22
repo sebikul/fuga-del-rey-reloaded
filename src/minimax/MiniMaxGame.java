@@ -1,6 +1,7 @@
 package minimax;
 
 import models.Game;
+import models.Movida;
 
 public class MiniMaxGame {
 
@@ -14,12 +15,12 @@ public class MiniMaxGame {
 
 	}
 
-	public Nodo getCurrentState() {
-		return currentState;
-	}
-
 	public Game getCurrentGame() {
 		return currentState.getEstado();
+	}
+
+	public Movida getMejorMovida() {
+		return currentState.getMovidaPorProfundidad(1);
 	}
 
 }

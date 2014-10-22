@@ -22,13 +22,21 @@ public class Nodo {
 		this.estado = estado;
 	}
 
+	public Movida getMovidaPorProfundidad(int profundidad) {
+		return getMovidaPorProfundidad(estado, profundidad);
+	}
+
 	private Movida getMovidaPorProfundidad(Game estado, int profundidad) {
 
 		for (int fila = 0; fila < estado.getSize(); fila++) {
 			for (int columna = 0; columna < estado.getSize(); columna++) {
 
 				try {
-					if (estado.getFichaAt(fila, columna) != Ficha.ENEMIGO) {
+
+					Ficha ficha = estado.getFichaAt(fila, columna);
+
+					if ((estado.getTurno() == Jugador.ENEMIGO && ficha != Ficha.ENEMIGO)
+							|| (estado.getTurno() == Jugador.GUARDIA && (ficha != Ficha.GUARDIA || ficha != Ficha.REY))) {
 						continue;
 					}
 				} catch (BoardPointOutOfBoundsException e1) {
@@ -41,7 +49,10 @@ public class Nodo {
 					Game game = estado.copiar();
 
 					try {
+
 						game.mover(movida);
+
+						movida.setValor(game.valorMagico());
 					} catch (MovimientoInvalidoException
 							| BoardPointOutOfBoundsException
 							| MovimientoBloqueadoException e) {
@@ -62,6 +73,19 @@ public class Nodo {
 
 		}
 
+		// Iterator<Movida> it = hijos.values().iterator();
+
+		// while (it.hasNext()) {
+		//
+		// Movida movida = it.next();
+		//
+		// Movida nuevaMovida = getMovidaPorProfundidad(estado,
+		// profundidad - 1);
+		//
+		// movida.setValor(nuevaMovida.getValor());
+		//
+		// }
+
 		for (Nodo nodo : hijos.keySet()) {
 
 			Movida movida = hijos.get(nodo);
@@ -73,12 +97,42 @@ public class Nodo {
 
 		}
 
+		Movida movida;
+
 		if (estado.getTurno() == Jugador.ENEMIGO) {
-			return Collections.max(hijos.values());
+			movida = Collections.max(hijos.values());
 		} else {
-			return Collections.min(hijos.values());
+			movida = Collections.min(hijos.values());
 		}
 
+		//System.out.println(movida);
+		return movida;
+
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((estado == null) ? 0 : estado.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Nodo other = (Nodo) obj;
+		if (estado == null) {
+			if (other.estado != null)
+				return false;
+		} else if (!estado.equals(other.estado))
+			return false;
+		return true;
 	}
 
 	public Game getEstado() {

@@ -21,6 +21,7 @@ import minimax.MiniMaxGame;
 import models.Ficha;
 import models.Game;
 import models.Jugador;
+import models.Movida;
 import models.Punto;
 
 import org.eclipse.wb.swing.FocusTraversalOnArray;
@@ -40,6 +41,8 @@ public class GraphicalBoard {
 	private JLabel lblError;
 	private JPanel panel_2;
 	private JPanel panel_3;
+
+	private Punto origen, destino;
 
 	/**
 	 * Create the application.
@@ -108,8 +111,6 @@ public class GraphicalBoard {
 
 		table.addMouseListener(new MouseAdapter() {
 
-			private Punto origen, destino;
-
 			@Override
 			public void mouseClicked(MouseEvent e) {
 
@@ -123,34 +124,9 @@ public class GraphicalBoard {
 
 					destino = new Punto(fila, columna);
 
-					try {
-						// TODO
-						Jugador result = game.getCurrentGame().mover(origen,
-								destino);
-						if (result != null) {
-							lblError.setText("El jugador " + result
-									+ " ha ganado");
-							return;
-						}
+					ejecutarMovidaDeJugador(origen, destino);
 
-					} catch (BoardPointOutOfBoundsException e1) {
-						lblError.setText("Las coordenadas ingresadas son invalidas");
-						return;
-					} catch (MovimientoBloqueadoException e1) {
-						lblError.setText("El movimiento esta bloqueado.");
-						return;
-					} catch (MovimientoInvalidoException e1) {
-						lblError.setText("El movimiento es invalido.");
-						return;
-					} finally {
-						origen = destino = null;
-					}
-
-					((AbstractTableModel) table.getModel())
-							.fireTableDataChanged();
-
-					actualizarTurno();
-					limpiarCoordenadas();
+					destino = origen = null;
 
 				}
 
@@ -160,11 +136,77 @@ public class GraphicalBoard {
 		table.setRowHeight(450 / table.getModel().getRowCount());
 
 		frame.setVisible(true);
+
+		ejecutarMovidaDeMaquina();
+
+		actualizarPantalla();
 	}
 
 	private void limpiarCoordenadas() {
 
 		lblError.setText("");
+	}
+
+	private void ejecutarMovidaDeJugador(Punto origen, Punto destino) {
+
+		try {
+
+			Jugador result;
+
+			// TODO
+			result = game.getCurrentGame().mover(origen, destino);
+			if (result != null) {
+				lblError.setText("El jugador " + result + " ha ganado");
+				return;
+			}
+
+		} catch (BoardPointOutOfBoundsException e1) {
+			lblError.setText("Las coordenadas ingresadas son invalidas");
+			return;
+		} catch (MovimientoBloqueadoException e1) {
+			lblError.setText("El movimiento esta bloqueado.");
+			return;
+		} catch (MovimientoInvalidoException e1) {
+			lblError.setText("El movimiento es invalido.");
+			return;
+		} finally {
+			origen = destino = null;
+		}
+
+		actualizarPantalla();
+		
+		ejecutarMovidaDeMaquina();
+
+		actualizarPantalla();
+
+	}
+
+	private void ejecutarMovidaDeMaquina() {
+		
+		Movida movida = game.getMejorMovida();
+
+		Jugador result = null;
+		try {
+			result = game.getCurrentGame().mover(movida);
+		} catch (MovimientoInvalidoException | BoardPointOutOfBoundsException
+				| MovimientoBloqueadoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		if (result != null) {
+			lblError.setText("El jugador " + result + " ha ganado");
+			return;
+		}
+
+	}
+
+	private void actualizarPantalla() {
+
+		((AbstractTableModel) table.getModel()).fireTableDataChanged();
+
+		actualizarTurno();
+		limpiarCoordenadas();
+
 	}
 
 	@SuppressWarnings("serial")
