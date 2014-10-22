@@ -13,6 +13,8 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 
+import models.Game;
+
 @SuppressWarnings("serial")
 public class NewGameDialog extends JDialog {
 
@@ -61,7 +63,7 @@ public class NewGameDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				int size = (int) spinner.getValue();
 
-				GraphicalBoard window = new GraphicalBoard(size);
+			//	GraphicalBoard window = new GraphicalBoard(new Game(boardSize) //recibo un game);
 				dispose();
 
 			}
