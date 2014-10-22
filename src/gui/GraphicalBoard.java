@@ -120,11 +120,16 @@ public class GraphicalBoard {
 				if (origen == null) {
 
 					origen = new Punto(fila, columna);
+
 				} else {
 
 					destino = new Punto(fila, columna);
 
-					ejecutarMovidaDeJugador(origen, destino);
+					if (origen.equals(destino)) {
+						table.clearSelection();
+					} else {
+						ejecutarMovidaDeJugador(origen, destino);
+					}
 
 					destino = origen = null;
 
