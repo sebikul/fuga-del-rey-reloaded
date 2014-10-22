@@ -21,7 +21,6 @@ import minimax.MiniMaxGame;
 import models.Ficha;
 import models.Game;
 import models.Jugador;
-import models.Movida;
 import models.Punto;
 
 import org.eclipse.wb.swing.FocusTraversalOnArray;
@@ -158,11 +157,10 @@ public class GraphicalBoard {
 
 			Jugador result;
 
-			// TODO
 			result = game.getCurrentGame().mover(origen, destino);
 			if (result != null) {
-				lblError.setText("El jugador " + result + " ha ganado");
-				return;
+				System.out.println("El jugador " + result + " ha ganado");
+				System.exit(0);
 			}
 
 		} catch (BoardPointOutOfBoundsException e1) {
@@ -189,8 +187,8 @@ public class GraphicalBoard {
 	private void ejecutarMovidaDeMaquina() {
 
 		if (game.ejecutarMovidaDeEnemigo()) {
-			lblError.setText("El enemigo ha ganado");
-			return;
+			System.out.println("El enemigo ha ganado");
+			System.exit(0);
 		}
 
 	}
@@ -228,7 +226,6 @@ public class GraphicalBoard {
 			try {
 				return game.getCurrentGame().getTokenAt(fila, columna);
 			} catch (BoardPointOutOfBoundsException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -249,7 +246,9 @@ public class GraphicalBoard {
 				int row, int column) {
 			Color newColor = Color.WHITE;
 
-			assert fichaObject != null;
+			if (fichaObject == null) {
+				return this;
+			}
 
 			char fichaChar = (char) fichaObject;
 
