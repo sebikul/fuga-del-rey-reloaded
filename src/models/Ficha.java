@@ -1,13 +1,16 @@
 package models;
 
 public enum Ficha {
-	REY('R'), CASTILLO('C'), TRONO('T'), GUARDIA('G'), ENEMIGO('N'), VACIO(' '), REYMUERTO(
-			'*');
+	REY('R', Jugador.GUARDIA), CASTILLO('C', null), TRONO('T', null), GUARDIA(
+			'G', Jugador.GUARDIA), ENEMIGO('N', Jugador.ENEMIGO), VACIO(' ',
+			null), REYMUERTO('*', null);
 
 	private final char token;
+	private final Jugador jugador;
 
-	Ficha(char token) {
+	Ficha(char token, Jugador jugador) {
 		this.token = token;
+		this.jugador = jugador;
 	}
 
 	public char getToken() {
@@ -45,5 +48,9 @@ public enum Ficha {
 
 		}
 
+	}
+
+	public Jugador getJugador() {
+		return jugador;
 	}
 }

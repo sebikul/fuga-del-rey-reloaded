@@ -17,9 +17,11 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import minimax.MiniMaxGame;
 import models.Ficha;
 import models.Game;
 import models.Jugador;
+import models.Movida;
 import models.Punto;
 
 import org.eclipse.wb.swing.FocusTraversalOnArray;
@@ -33,19 +35,21 @@ public class GraphicalBoard {
 	private JFrame frame;
 	private JTable table;
 	private TableModel tableModel;
-	private Game game;
+	private MiniMaxGame game;
 	private JLabel lblJugador;
 	private JPanel panel;
 	private JLabel lblError;
 	private JPanel panel_2;
 	private JPanel panel_3;
 
+	private Punto origen, destino;
+
 	/**
 	 * Create the application.
 	 */
-	public GraphicalBoard(int size) {
+	public GraphicalBoard(Game tmpgame) {
 
-		game = new Game(size);
+		game = new MiniMaxGame(tmpgame);
 		tableModel = new GameTableModel();
 
 		initialize();
@@ -54,7 +58,7 @@ public class GraphicalBoard {
 	}
 
 	private void actualizarTurno() {
-		lblJugador.setText(game.getTurno().name());
+		lblJugador.setText(game.getCurrentGame().getTurno().name());
 	}
 
 	/**
@@ -68,6 +72,7 @@ public class GraphicalBoard {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		table = new JTable();
+		table.setCellSelectionEnabled(true);
 		table.setRowSelectionAllowed(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setFillsViewportHeight(true);
@@ -106,8 +111,6 @@ public class GraphicalBoard {
 
 		table.addMouseListener(new MouseAdapter() {
 
-			private Punto origen, destino;
-
 			@Override
 			public void mouseClicked(MouseEvent e) {
 
@@ -117,48 +120,13 @@ public class GraphicalBoard {
 				if (origen == null) {
 
 					origen = new Punto(fila, columna);
-
 				} else {
 
 					destino = new Punto(fila, columna);
 
-					try {
+					ejecutarMovidaDeJugador(origen, destino);
 
-						Jugador result = game.mover(origen, destino);
-
-						if (result != null) {
-
-							lblError.setText("El jugador " + result
-									+ " ha ganado");
-
-						}
-
-					} catch (BoardPointOutOfBoundsException e1) {
-
-						lblError.setText("Las coordenadas ingresadas son invalidas");
-
-						return;
-
-					} catch (MovimientoBloqueadoException e1) {
-
-						lblError.setText("El movimiento esta bloqueado.");
-
-						return;
-
-					} catch (MovimientoInvalidoException e1) {
-
-						lblError.setText("El movimiento es invalido.");
-
-						return;
-					} finally {
-						origen = destino = null;
-					}
-
-					((AbstractTableModel) table.getModel())
-							.fireTableDataChanged();
-
-					actualizarTurno();
-					limpiarCoordenadas();
+					destino = origen = null;
 
 				}
 
@@ -168,11 +136,67 @@ public class GraphicalBoard {
 		table.setRowHeight(450 / table.getModel().getRowCount());
 
 		frame.setVisible(true);
+
+		ejecutarMovidaDeMaquina();
+
+		actualizarPantalla();
 	}
 
 	private void limpiarCoordenadas() {
 
 		lblError.setText("");
+	}
+
+	private void ejecutarMovidaDeJugador(Punto origen, Punto destino) {
+
+		try {
+
+			Jugador result;
+
+			// TODO
+			result = game.getCurrentGame().mover(origen, destino);
+			if (result != null) {
+				lblError.setText("El jugador " + result + " ha ganado");
+				return;
+			}
+
+		} catch (BoardPointOutOfBoundsException e1) {
+			lblError.setText("Las coordenadas ingresadas son invalidas");
+			return;
+		} catch (MovimientoBloqueadoException e1) {
+			lblError.setText("El movimiento esta bloqueado.");
+			return;
+		} catch (MovimientoInvalidoException e1) {
+			lblError.setText("El movimiento es invalido.");
+			return;
+		} finally {
+			origen = destino = null;
+		}
+
+		actualizarPantalla();
+
+		ejecutarMovidaDeMaquina();
+
+		actualizarPantalla();
+
+	}
+
+	private void ejecutarMovidaDeMaquina() {
+
+		if (game.ejecutarMovidaDeEnemigo()) {
+			lblError.setText("El enemigo ha ganado");
+			return;
+		}
+
+	}
+
+	private void actualizarPantalla() {
+
+		((AbstractTableModel) table.getModel()).fireTableDataChanged();
+
+		actualizarTurno();
+		limpiarCoordenadas();
+
 	}
 
 	@SuppressWarnings("serial")
@@ -186,18 +210,18 @@ public class GraphicalBoard {
 		@Override
 		public int getRowCount() {
 
-			return game.getSize();
+			return game.getCurrentGame().getSize();
 		}
 
 		@Override
 		public int getColumnCount() {
-			return game.getSize();
+			return game.getCurrentGame().getSize();
 		}
 
 		@Override
 		public Object getValueAt(int fila, int columna) {
 			try {
-				return game.getTokenAt(fila, columna);
+				return game.getCurrentGame().getTokenAt(fila, columna);
 			} catch (BoardPointOutOfBoundsException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -259,6 +283,11 @@ public class GraphicalBoard {
 			}
 
 			setBackground(newColor);
+
+			if (row == table.getSelectedRow()
+					&& column == table.getSelectedColumn()) {
+				setBackground(Color.GREEN);
+			}
 
 			return this;
 

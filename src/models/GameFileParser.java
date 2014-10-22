@@ -35,8 +35,8 @@ public class GameFileParser {
 
 		int i = 0;
 
-		Ficha[][] tablero=null;
-		
+		Ficha[][] tablero = null;
+
 		try {
 			while (fileReader.ready()) {
 
@@ -70,6 +70,8 @@ public class GameFileParser {
 				e.printStackTrace();
 			}
 		}
+
+		tablero[0][0] = tablero[0][size - 1] = tablero[size - 1][0] = tablero[size - 1][size - 1] = Ficha.CASTILLO;
 
 		return new Game(size, tablero, turno);
 

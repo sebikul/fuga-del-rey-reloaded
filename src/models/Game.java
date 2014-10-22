@@ -1,6 +1,8 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import exceptions.BoardPointOutOfBoundsException;
 import exceptions.MovimientoBloqueadoException;
@@ -14,6 +16,8 @@ public class Game {
 
 	private Jugador turno = Jugador.ENEMIGO;
 
+	private int[] cantidadDeFichas = new int[] { 0, 0 };
+
 	public Game(int boardSize) {
 
 		if (boardSize < 7 || boardSize > 19 || boardSize % 2 == 0) {
@@ -23,17 +27,7 @@ public class Game {
 
 		this.size = boardSize;
 
-		this.tablero = new Ficha[size][];
-
-		for (int i = 0; i < size; i++) {
-
-			tablero[i] = new Ficha[size];
-			for (int j = 0; j < size; j++) {
-				tablero[i][j] = Ficha.VACIO;
-
-			}
-
-		}
+		this.tablero = new Ficha[size][size];
 
 		popularTablero();
 
@@ -46,7 +40,7 @@ public class Game {
 
 		int result = 1;
 		result = prime * result + Arrays.hashCode(tablero[0]);
-	
+
 		result = prime * result + Arrays.hashCode(tablero[medio - 1]);
 		result = prime * result + Arrays.hashCode(tablero[medio]);
 		result = prime * result + Arrays.hashCode(tablero[medio + 1]);
@@ -55,6 +49,18 @@ public class Game {
 
 		result = prime * result + ((turno == null) ? 0 : turno.hashCode());
 		return result;
+	}
+
+	public int valorMagico() {
+
+		int valor = cantidadDeFichas[Jugador.ENEMIGO.getIndice()]
+				- cantidadDeFichas[Jugador.GUARDIA.getIndice()];
+		//
+		// if (turno == Jugador.GUARDIA) {
+		// valor = valor * -1;
+		// }
+
+		return valor;
 	}
 
 	@Override
@@ -156,6 +162,11 @@ public class Game {
 
 	public Jugador getTurno() {
 		return turno;
+	}
+
+	public Jugador mover(Movida movida) throws MovimientoInvalidoException,
+			BoardPointOutOfBoundsException, MovimientoBloqueadoException {
+		return mover(movida.getOrigen(), movida.getDestino());
 	}
 
 	/*
@@ -278,12 +289,14 @@ public class Game {
 		tablero[0][0] = tablero[0][maxIndex] = tablero[maxIndex][0] = tablero[maxIndex][maxIndex] = Ficha.CASTILLO;
 
 		tablero[medio][medio] = Ficha.REY;
+		cantidadDeFichas[Jugador.GUARDIA.getIndice()] += 1;
 
 		tablero[1][medio] = Ficha.ENEMIGO;
 		tablero[medio][1] = Ficha.ENEMIGO;
 
 		tablero[maxIndex - 1][medio] = Ficha.ENEMIGO;
 		tablero[medio][maxIndex - 1] = Ficha.ENEMIGO;
+		cantidadDeFichas[Jugador.ENEMIGO.getIndice()] += 4;
 
 		//
 		// TODO
@@ -302,6 +315,7 @@ public class Game {
 
 			tablero[maxIndex][maxIndex - i] = Ficha.ENEMIGO;
 			tablero[maxIndex - i][maxIndex] = Ficha.ENEMIGO;
+			cantidadDeFichas[Jugador.ENEMIGO.getIndice()] += 8;
 
 		}
 
@@ -309,6 +323,8 @@ public class Game {
 			for (int j = medio - 1; j <= medio + 1; j++) {
 				if (i != medio || j != medio) {
 					tablero[i][j] = Ficha.GUARDIA;
+					cantidadDeFichas[Jugador.GUARDIA.getIndice()] += 1;
+
 				}
 
 			}
@@ -320,6 +336,7 @@ public class Game {
 			tablero[medio + 2][medio] = Ficha.GUARDIA;
 			tablero[medio][medio - 2] = Ficha.GUARDIA;
 			tablero[medio - 2][medio] = Ficha.GUARDIA;
+			cantidadDeFichas[Jugador.GUARDIA.getIndice()] += 4;
 
 		}
 
@@ -434,6 +451,9 @@ public class Game {
 
 							if (esAliado(pos_aliado)) {
 
+								cantidadDeFichas[tablero[fila][columna]
+										.getJugador().getIndice()]--;
+
 								tablero[fila][columna] = Ficha.VACIO;
 
 							}
@@ -467,6 +487,100 @@ public class Game {
 			turno = Jugador.GUARDIA;
 		}
 
+	}
+
+	public List<Movida> getPosiblesMovidas(Punto origen) {
+
+		List<Movida> lista = new ArrayList<Movida>();
+
+		int fila, columna;
+
+		Ficha ficha;
+
+		// abajo
+		for (columna = origen.getColumna(), fila = origen.getFila(); fila < size; fila++) {
+
+			if (fila == origen.getFila() && columna == origen.getColumna()) {
+				continue;
+			}
+
+			ficha = tablero[fila][columna];
+
+			if (ficha != Ficha.VACIO) {
+				break;
+			}
+
+			lista.add(new Movida(origen, new Punto(fila, columna)));
+
+		}
+
+		// arriba
+		for (columna = origen.getColumna(), fila = origen.getFila(); fila >= 0; fila--) {
+
+			if (fila == origen.getFila() && columna == origen.getColumna()) {
+				continue;
+			}
+
+			ficha = tablero[fila][columna];
+
+			if (ficha != Ficha.VACIO) {
+				break;
+			}
+
+			lista.add(new Movida(origen, new Punto(fila, columna)));
+
+		}
+
+		// derecha
+		for (fila = origen.getFila(), columna = origen.getColumna(); columna > size; columna++) {
+
+			if (fila == origen.getFila() && columna == origen.getColumna()) {
+				continue;
+			}
+
+			ficha = tablero[fila][columna];
+
+			if (ficha != Ficha.VACIO) {
+				break;
+			}
+
+			lista.add(new Movida(origen, new Punto(fila, columna)));
+		}
+
+		// izquierda
+		for (fila = origen.getFila(), columna = origen.getColumna(); columna >= 0; columna--) {
+
+			if (fila == origen.getFila() && columna == origen.getColumna()) {
+				continue;
+			}
+
+			ficha = tablero[fila][columna];
+
+			if (ficha != Ficha.VACIO) {
+				break;
+			}
+
+			lista.add(new Movida(origen, new Punto(fila, columna)));
+		}
+
+		// TODO
+		return lista;
+
+	}
+
+	public Game copiar() {
+		Game tmpgame = new Game(size, null, turno);
+
+		tmpgame.tablero = new Ficha[size][size];
+
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				tmpgame.tablero[i][j] = tablero[i][j];
+
+			}
+		}
+
+		return tmpgame;
 	}
 
 }
