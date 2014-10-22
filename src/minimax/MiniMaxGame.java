@@ -7,8 +7,6 @@ public class MiniMaxGame {
 
 	private Nodo currentState;
 
-	// private Map<Nodo> estados = new HashMap<Nodo>();
-
 	public MiniMaxGame(Game juegoInicial) {
 
 		currentState = new Nodo(juegoInicial);

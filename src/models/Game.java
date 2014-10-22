@@ -16,6 +16,8 @@ public class Game {
 
 	private Jugador turno = Jugador.ENEMIGO;
 
+	private int[] cantidadDeFichas = new int[] { 0, 0 };
+
 	public Game(int boardSize) {
 
 		if (boardSize < 7 || boardSize > 19 || boardSize % 2 == 0) {
@@ -51,41 +53,14 @@ public class Game {
 
 	public int valorMagico() {
 
-		int[] fichas = contarFichas();
-
-		int valor = fichas[Jugador.ENEMIGO.getIndice()]
-				- fichas[Jugador.GUARDIA.getIndice()];
+		int valor = cantidadDeFichas[Jugador.ENEMIGO.getIndice()]
+				- cantidadDeFichas[Jugador.GUARDIA.getIndice()];
 		//
 		// if (turno == Jugador.GUARDIA) {
 		// valor = valor * -1;
 		// }
 
 		return valor;
-	}
-
-	// TODO optimizar, meterle una variable al Game
-	private int[] contarFichas() {
-
-		int[] ret = new int[] { 0, 0 };
-
-		Ficha ficha;
-
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-
-				ficha = tablero[i][j];
-
-				if (ficha == Ficha.REY || ficha == Ficha.GUARDIA) {
-					ret[Jugador.GUARDIA.getIndice()]++;
-				} else if (ficha == Ficha.ENEMIGO) {
-					ret[Jugador.ENEMIGO.getIndice()]++;
-				}
-
-			}
-		}
-
-		return ret;
-
 	}
 
 	@Override
@@ -314,12 +289,14 @@ public class Game {
 		tablero[0][0] = tablero[0][maxIndex] = tablero[maxIndex][0] = tablero[maxIndex][maxIndex] = Ficha.CASTILLO;
 
 		tablero[medio][medio] = Ficha.REY;
+		cantidadDeFichas[Jugador.GUARDIA.getIndice()] += 1;
 
 		tablero[1][medio] = Ficha.ENEMIGO;
 		tablero[medio][1] = Ficha.ENEMIGO;
 
 		tablero[maxIndex - 1][medio] = Ficha.ENEMIGO;
 		tablero[medio][maxIndex - 1] = Ficha.ENEMIGO;
+		cantidadDeFichas[Jugador.ENEMIGO.getIndice()] += 4;
 
 		//
 		// TODO
@@ -338,6 +315,7 @@ public class Game {
 
 			tablero[maxIndex][maxIndex - i] = Ficha.ENEMIGO;
 			tablero[maxIndex - i][maxIndex] = Ficha.ENEMIGO;
+			cantidadDeFichas[Jugador.ENEMIGO.getIndice()] += 8;
 
 		}
 
@@ -345,6 +323,8 @@ public class Game {
 			for (int j = medio - 1; j <= medio + 1; j++) {
 				if (i != medio || j != medio) {
 					tablero[i][j] = Ficha.GUARDIA;
+					cantidadDeFichas[Jugador.GUARDIA.getIndice()] += 1;
+
 				}
 
 			}
@@ -356,6 +336,7 @@ public class Game {
 			tablero[medio + 2][medio] = Ficha.GUARDIA;
 			tablero[medio][medio - 2] = Ficha.GUARDIA;
 			tablero[medio - 2][medio] = Ficha.GUARDIA;
+			cantidadDeFichas[Jugador.GUARDIA.getIndice()] += 4;
 
 		}
 
@@ -469,6 +450,9 @@ public class Game {
 											* 2);
 
 							if (esAliado(pos_aliado)) {
+
+								cantidadDeFichas[tablero[fila][columna]
+										.getJugador().getIndice()]--;
 
 								tablero[fila][columna] = Ficha.VACIO;
 

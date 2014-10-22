@@ -40,7 +40,7 @@ public class Nodo {
 						continue;
 					}
 				} catch (BoardPointOutOfBoundsException e1) {
-					// TODO
+
 				}
 
 				for (Movida movida : estado.getPosiblesMovidas(new Punto(fila,
@@ -56,7 +56,11 @@ public class Nodo {
 					} catch (MovimientoInvalidoException
 							| BoardPointOutOfBoundsException
 							| MovimientoBloqueadoException e) {
-						// TODO
+
+					}
+
+					if (!game.verificarMovida(movida)) {
+						//System.out.println("asd");;
 					}
 
 					hijos.put(new Nodo(game), movida);
@@ -72,19 +76,6 @@ public class Nodo {
 			return Collections.max(hijos.values());
 
 		}
-
-		// Iterator<Movida> it = hijos.values().iterator();
-
-		// while (it.hasNext()) {
-		//
-		// Movida movida = it.next();
-		//
-		// Movida nuevaMovida = getMovidaPorProfundidad(estado,
-		// profundidad - 1);
-		//
-		// movida.setValor(nuevaMovida.getValor());
-		//
-		// }
 
 		for (Nodo nodo : hijos.keySet()) {
 
@@ -105,7 +96,7 @@ public class Nodo {
 			movida = Collections.min(hijos.values());
 		}
 
-		//System.out.println(movida);
+		// System.out.println(movida);
 		return movida;
 
 	}
