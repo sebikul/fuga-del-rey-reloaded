@@ -1,6 +1,7 @@
 package models;
 
 import java.util.Arrays;
+import java.util.List;
 
 import exceptions.BoardPointOutOfBoundsException;
 import exceptions.MovimientoBloqueadoException;
@@ -46,7 +47,7 @@ public class Game {
 
 		int result = 1;
 		result = prime * result + Arrays.hashCode(tablero[0]);
-	
+
 		result = prime * result + Arrays.hashCode(tablero[medio - 1]);
 		result = prime * result + Arrays.hashCode(tablero[medio]);
 		result = prime * result + Arrays.hashCode(tablero[medio + 1]);
@@ -55,6 +56,13 @@ public class Game {
 
 		result = prime * result + ((turno == null) ? 0 : turno.hashCode());
 		return result;
+	}
+
+	public int valorMagico() {
+
+		int valor = 1;
+
+		return valor;
 	}
 
 	@Override
@@ -156,6 +164,11 @@ public class Game {
 
 	public Jugador getTurno() {
 		return turno;
+	}
+
+	public Jugador mover(Movida movida) throws MovimientoInvalidoException,
+			BoardPointOutOfBoundsException, MovimientoBloqueadoException {
+		return mover(movida.getOrigen(), movida.getDestino());
 	}
 
 	/*
@@ -467,6 +480,23 @@ public class Game {
 			turno = Jugador.GUARDIA;
 		}
 
+	}
+
+	public List<Movida> getPosiblesMovidas(Punto origen) {
+
+		// TODO
+		return null;
+
+	}
+
+	// public Iterator iterator(){
+	//
+	// }
+
+	public Game copiar() {
+		// TODO
+
+		return null;
 	}
 
 }

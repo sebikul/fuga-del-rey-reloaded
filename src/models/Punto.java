@@ -6,9 +6,16 @@ public class Punto {
 
 	private final int fila;
 
+	private final Ficha ficha;
+
 	public Punto(int fila, int columna) {
+		this(fila, columna, null);
+	}
+
+	public Punto(int fila, int columna, Ficha ficha) {
 		this.fila = fila;
 		this.columna = columna;
+		this.ficha = ficha;
 	}
 
 	@Override
@@ -38,6 +45,10 @@ public class Punto {
 	@Override
 	public String toString() {
 		return "Punto [fila=" + fila + ", columna=" + columna + "]";
+	}
+
+	public Ficha getFicha() {
+		return ficha;
 	}
 
 }
