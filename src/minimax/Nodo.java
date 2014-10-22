@@ -59,10 +59,6 @@ public class Nodo {
 
 					}
 
-					if (!game.verificarMovida(movida)) {
-						//System.out.println("asd");;
-					}
-
 					hijos.put(new Nodo(game), movida);
 				}
 

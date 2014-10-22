@@ -174,7 +174,7 @@ public class GraphicalBoard {
 		}
 
 		actualizarPantalla();
-		
+
 		ejecutarMovidaDeMaquina();
 
 		actualizarPantalla();
@@ -182,19 +182,9 @@ public class GraphicalBoard {
 	}
 
 	private void ejecutarMovidaDeMaquina() {
-		
-		Movida movida = game.getMejorMovida();
 
-		Jugador result = null;
-		try {
-			result = game.getCurrentGame().mover(movida);
-		} catch (MovimientoInvalidoException | BoardPointOutOfBoundsException
-				| MovimientoBloqueadoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		if (result != null) {
-			lblError.setText("El jugador " + result + " ha ganado");
+		if (game.ejecutarMovidaDeEnemigo()) {
+			lblError.setText("El enemigo ha ganado");
 			return;
 		}
 
