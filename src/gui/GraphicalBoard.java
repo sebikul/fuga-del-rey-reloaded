@@ -17,7 +17,9 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
+import minimax.MiniMaxByDepthGame;
 import minimax.MiniMaxGame;
+import minimax.MiniMaxTimedGame;
 import models.Ficha;
 import models.Game;
 import models.Jugador;
@@ -33,7 +35,7 @@ public class GraphicalBoard {
 
 	private JFrame frame;
 	private JTable table;
-	private TableModel tableModel;
+	private TableModel tableModel = new GameTableModel();
 	private MiniMaxGame game;
 	private JLabel lblJugador;
 	private JPanel panel;
@@ -46,13 +48,33 @@ public class GraphicalBoard {
 	/**
 	 * Create the application.
 	 */
-	public GraphicalBoard(Game tmpgame) {
+	private GraphicalBoard() {
 
-		game = new MiniMaxGame(tmpgame);
-		tableModel = new GameTableModel();
+	}
 
-		initialize();
-		actualizarTurno();
+	static public GraphicalBoard fromGameWithMaxTime(Game tmpgame, int time,
+			boolean prune, boolean saveTree) {
+
+		GraphicalBoard gui = new GraphicalBoard();
+
+		gui.game = new MiniMaxTimedGame(tmpgame, prune, saveTree, time);
+
+		gui.initialize();
+
+		return gui;
+
+	}
+
+	static public GraphicalBoard fromGameWithDepth(Game tmpgame, int depth,
+			boolean prune, boolean saveTree) {
+
+		GraphicalBoard gui = new GraphicalBoard();
+
+		gui.game = new MiniMaxByDepthGame(tmpgame, prune, saveTree, depth);
+
+		gui.initialize();
+
+		return gui;
 
 	}
 
@@ -141,9 +163,8 @@ public class GraphicalBoard {
 
 		frame.setVisible(true);
 
-		ejecutarMovidaDeMaquina();
-
 		actualizarPantalla();
+
 	}
 
 	private void limpiarCoordenadas() {
@@ -235,7 +256,7 @@ public class GraphicalBoard {
 	}
 
 	@SuppressWarnings("serial")
-	public class ColorRenderer extends JLabel implements TableCellRenderer {
+	private class ColorRenderer extends JLabel implements TableCellRenderer {
 
 		public ColorRenderer() {
 			setOpaque(true);

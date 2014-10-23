@@ -3,6 +3,7 @@ package minimax;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import models.Ficha;
 import models.Game;
@@ -126,4 +127,7 @@ public class Nodo {
 		return estado;
 	}
 
+	public Map<Nodo, Movida> getHijos() {
+		return Collections.unmodifiableMap(hijos);
+	}
 }

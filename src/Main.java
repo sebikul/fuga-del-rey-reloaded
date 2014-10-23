@@ -1,5 +1,8 @@
 import java.io.FileNotFoundException;
 
+import minimax.MiniMaxByDepthGame;
+import minimax.MiniMaxGame;
+import minimax.MiniMaxTimedGame;
 import models.Game;
 import models.GameFileParser;
 import exceptions.InvalidFormatException;
@@ -8,31 +11,136 @@ import gui.GraphicalBoard;
 public class Main {
 
 	public static void main(String[] args) {
+
+		if (args.length < 5) {
+			throwArgumentErrorAndExit();
+		}
+
+		if (!args[0].equals("-file")) {
+			throwArgumentErrorAndExit();
+		}
+
+		String path = System.getProperty("user.dir") + "/./" + args[1];
+
+		boolean limitByDepth = false;
+
+		if (args[2].equals("-maxtime")) {
+
+			limitByDepth = false;
+
+		} else if (args[2].equals("-depth")) {
+
+			limitByDepth = true;
+
+		} else {
+			throwArgumentErrorAndExit();
+		}
+
+		int param = 0;
+
 		try {
+			param = Integer.parseInt(args[3]);
+		} catch (NumberFormatException e) {
+			throwArgumentErrorAndExit();
+		}
 
-			Game juegoArchivo = GameFileParser.fromFile(System
-					.getProperty("user.dir") + "/./" + args[1]);
+		boolean isVisual = false;
 
-			GraphicalBoard gui = new GraphicalBoard(juegoArchivo);
+		if (args[4].equals("-visual")) {
+			isVisual = true;
+		} else if (args[4].equals("-console")) {
+			isVisual = false;
+		} else {
+			throwArgumentErrorAndExit();
+		}
 
-			// System.out.println(juegoArchivo);
+		boolean prune = false;
+		boolean saveTree = false;
 
-			// if(args[2].equals("-maxtime")){
-			//
-			// System.out.println("Hago la funcion por tiempo de la clase MiniMax con el parametro args[3]");
-			// }else if(args[2].equals("-depth")){
-			// System.out.println("Llamo a la funcion por profundidad de la clase MiniMax con el parametro args[3]");
-			// }else{
-			// System.out.println("Parametros incorrectos");
-			// System.exit(1);
-			// }
-			//
-			//
+		if (args.length == 6) {
 
+			if (args[5].equals("-prune")) {
+				prune = true;
+			} else if (args[5].equals("-tree")) {
+				saveTree = true;
+			} else {
+				throwArgumentErrorAndExit();
+			}
+
+		} else if (args.length == 7) {
+
+			if (args[5].equals("-prune")) {
+				prune = true;
+
+				if (args[6].equals("-tree")) {
+					saveTree = true;
+				} else {
+					throwArgumentErrorAndExit();
+				}
+
+			} else {
+				throwArgumentErrorAndExit();
+			}
+
+		}
+
+		Game juegoArchivo = null;
+
+		try {
+			juegoArchivo = GameFileParser.fromFile(path);
 		} catch (FileNotFoundException | InvalidFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println("Archivo invalido.");
+			System.exit(1);
+		}
+
+		if (isVisual) {
+
+			GraphicalBoard gui;
+
+			if (limitByDepth) {
+
+				gui = GraphicalBoard.fromGameWithDepth(juegoArchivo, param,
+						prune, saveTree);
+
+			} else {
+
+				gui = GraphicalBoard.fromGameWithMaxTime(juegoArchivo, param,
+						prune, saveTree);
+
+			}
+
+		} else {
+
+			MiniMaxGame game;
+
+			if (limitByDepth) {
+
+				game = new MiniMaxByDepthGame(juegoArchivo, prune, saveTree,
+						param);
+
+			} else {
+
+				game = new MiniMaxTimedGame(juegoArchivo, prune, saveTree,
+						param);
+
+			}
+
+			System.out.println(game.getMejorMovida());
+
 		}
 
 	}
+
+	private static void throwArgumentErrorAndExit() {
+		System.out.println("Argumentos invalidos!");
+
+		printUsage();
+
+		System.exit(1);
+	}
+
+	private static void printUsage() {
+
+	}
+
 }

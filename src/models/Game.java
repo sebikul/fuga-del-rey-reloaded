@@ -14,7 +14,7 @@ public class Game {
 
 	private Ficha[][] tablero;
 
-	private Jugador turno = Jugador.ENEMIGO;
+	private Jugador turno = Jugador.GUARDIA;
 
 	private int[] cantidadDeFichas = new int[] { 0, 0 };
 
@@ -60,7 +60,45 @@ public class Game {
 		// valor = valor * -1;
 		// }
 
-		return valor;
+		int bloqueos = 0;
+
+		Punto rey = buscarAlRey();
+		
+		assert rey!=null;
+
+		for (int columna = rey.getColumna() - 1; columna <= rey.getColumna() + 1; columna++) {
+			for (int fila = rey.getFila() - 1; fila <= rey.getFila() + 1; fila++) {
+
+				if (fila == rey.getFila() && columna == rey.getColumna()) {
+					continue;
+				}
+
+				try {
+					if (getFichaAt(fila, columna) == Ficha.ENEMIGO) {
+						bloqueos++;
+					}
+				} catch (BoardPointOutOfBoundsException e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
+
+		return valor + 2 * bloqueos;
+	}
+
+	private Punto buscarAlRey() {
+
+		for (int fila = 0; fila < size; fila++) {
+			for (int columna = 0; columna < size; columna++) {
+				if (tablero[fila][columna] == Ficha.REY) {
+					return new Punto(fila, columna);
+				}
+			}
+		}
+
+		return null;
+
 	}
 
 	@Override
@@ -401,62 +439,61 @@ public class Game {
 				.getColumna() + 1; columna++) {
 			for (int fila = destino.getFila() - 1; fila <= destino.getFila() + 1; fila++) {
 
-				if (!((fila != destino.getFila() && columna != destino
-						.getColumna()) || (fila == destino.getFila() && columna == destino
-						.getColumna()))) {
+				if ((fila != destino.getFila() && columna != destino
+						.getColumna())
+						|| (fila == destino.getFila() && columna == destino
+								.getColumna())) {
+					continue;
+				}
 
-					pos_enemigo = new Punto(fila, columna);
+				pos_enemigo = new Punto(fila, columna);
 
-					if (esOponente(pos_enemigo)) {
+				if (esOponente(pos_enemigo)) {
 
-						if (tablero[fila][columna] == Ficha.REY) {
+					if (tablero[fila][columna] == Ficha.REY) {
 
-							int bloqueos = 0;
+						int bloqueos = 0;
 
-							/* Verifica que el rey este rodeado por 4 aliados */
-							for (int col_aux = columna - 1; col_aux <= columna + 1; col_aux++) {
-								for (int fil_aux = fila - 1; fil_aux <= fila + 1; fil_aux++) {
+						/* Verifica que el rey este rodeado por 4 aliados */
+						for (int col_aux = columna - 1; col_aux <= columna + 1; col_aux++) {
+							for (int fil_aux = fila - 1; fil_aux <= fila + 1; fil_aux++) {
 
-									if (!((fil_aux != fila && col_aux != columna) || (fil_aux == fila && col_aux == columna))) {
+								if (!((fil_aux != fila && col_aux != columna) || (fil_aux == fila && col_aux == columna))) {
 
-										pos_aliado = new Punto(fil_aux, col_aux);
+									pos_aliado = new Punto(fil_aux, col_aux);
 
-										if (!puntoEsValido(pos_aliado)
-												|| tablero[pos_aliado.getFila()][pos_aliado
-														.getColumna()] != Ficha.VACIO) {
-											bloqueos++;
-										}
+									if (!puntoEsValido(pos_aliado)
+											|| tablero[pos_aliado.getFila()][pos_aliado
+													.getColumna()] != Ficha.VACIO) {
+										bloqueos++;
 									}
-
 								}
 
 							}
-							/* El rey esta rodeado */
-							if (bloqueos == 4) {
-								tablero[fila][columna] = Ficha.REYMUERTO;
-								return Jugador.ENEMIGO;
-							}
 
-						} else {
-							/*
-							 * La ficha oponente no es el rey, veo si esta
-							 * capturada
-							 */
+						}
+						/* El rey esta rodeado */
+						if (bloqueos == 4) {
+							tablero[fila][columna] = Ficha.REYMUERTO;
+							return Jugador.ENEMIGO;
+						}
 
-							pos_aliado = new Punto(destino.getFila()
-									+ (fila - destino.getFila()) * 2,
-									destino.getColumna()
-											+ (columna - destino.getColumna())
-											* 2);
+					} else {
+						/*
+						 * La ficha oponente no es el rey, veo si esta capturada
+						 */
 
-							if (esAliado(pos_aliado)) {
+						pos_aliado = new Punto(destino.getFila()
+								+ (fila - destino.getFila()) * 2,
+								destino.getColumna()
+										+ (columna - destino.getColumna()) * 2);
 
-								cantidadDeFichas[tablero[fila][columna]
-										.getJugador().getIndice()]--;
+						if (esAliado(pos_aliado)) {
 
-								tablero[fila][columna] = Ficha.VACIO;
+							cantidadDeFichas[tablero[fila][columna]
+									.getJugador().getIndice()]--;
 
-							}
+							tablero[fila][columna] = Ficha.VACIO;
 
 						}
 

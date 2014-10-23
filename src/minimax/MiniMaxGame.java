@@ -1,5 +1,9 @@
 package minimax;
 
+import java.util.LinkedList;
+import java.util.Map.Entry;
+import java.util.Queue;
+
 import models.Game;
 import models.Jugador;
 import models.Movida;
@@ -7,13 +11,18 @@ import exceptions.BoardPointOutOfBoundsException;
 import exceptions.MovimientoBloqueadoException;
 import exceptions.MovimientoInvalidoException;
 
-public class MiniMaxGame {
+public abstract class MiniMaxGame {
 
 	private Nodo currentState;
+	private boolean prune = false;
+	private boolean saveTree = false;
 
-	public MiniMaxGame(Game juegoInicial) {
+	public MiniMaxGame(Game juegoInicial, boolean prune, boolean saveTree) {
 
 		currentState = new Nodo(juegoInicial);
+
+		this.prune = prune;
+		this.saveTree = saveTree;
 
 	}
 
@@ -22,7 +31,7 @@ public class MiniMaxGame {
 	}
 
 	public Movida getMejorMovida() {
-		return currentState.getMovidaPorProfundidad(1);
+		return currentState.getMovidaPorProfundidad(2);
 	}
 
 	public boolean ejecutarMovidaDeEnemigo() {
@@ -33,7 +42,6 @@ public class MiniMaxGame {
 			result = currentState.getEstado().mover(movida);
 		} catch (MovimientoInvalidoException | BoardPointOutOfBoundsException
 				| MovimientoBloqueadoException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -44,6 +52,30 @@ public class MiniMaxGame {
 		}
 
 		return false;
+
+	}
+
+	public void printGraphVizCode() {
+
+		System.out.println("digraph {");
+
+		Queue<Nodo> queue = new LinkedList<Nodo>();
+		queue.add(currentState);
+
+		while (!queue.isEmpty()) {
+
+			Nodo nodo = queue.poll();
+
+			for (Entry<Nodo, Movida> entry : nodo.getHijos().entrySet()) {
+
+				System.out.println(entry.getValue());
+				queue.add(entry.getKey());
+
+			}
+
+		}
+
+		System.out.println("digraph }");
 
 	}
 
