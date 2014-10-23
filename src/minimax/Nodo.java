@@ -3,7 +3,6 @@ package minimax;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import models.Ficha;
 import models.Game;
@@ -64,13 +63,17 @@ public class Nodo {
 				}
 
 			}
-
 		}
 
-		if ((profundidad == 1 && estado.getTurno() == Jugador.ENEMIGO)
-				|| (profundidad == 2 && estado.getTurno() == Jugador.GUARDIA)) {
+		
 
-			return Collections.max(hijos.values());
+		if (profundidad == 1) {
+
+			if (estado.getTurno() == Jugador.ENEMIGO) {
+				return Collections.max(hijos.values());
+			} else {
+				return Collections.min(hijos.values());
+			}
 
 		}
 
@@ -85,16 +88,12 @@ public class Nodo {
 
 		}
 
-		Movida movida;
-
 		if (estado.getTurno() == Jugador.ENEMIGO) {
-			movida = Collections.max(hijos.values());
+			return Collections.max(hijos.values());
 		} else {
-			movida = Collections.min(hijos.values());
+			return Collections.min(hijos.values());
 		}
 
-		// System.out.println(movida);
-		return movida;
 
 	}
 

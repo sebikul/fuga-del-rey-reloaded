@@ -13,7 +13,7 @@ import exceptions.MovimientoInvalidoException;
 
 public abstract class MiniMaxGame {
 
-	private Nodo currentState;
+	protected Nodo currentState;
 	private boolean prune = false;
 	private boolean saveTree = false;
 
@@ -23,16 +23,13 @@ public abstract class MiniMaxGame {
 
 		this.prune = prune;
 		this.saveTree = saveTree;
-
 	}
 
 	public Game getCurrentGame() {
 		return currentState.getEstado();
 	}
 
-	public Movida getMejorMovida() {
-		return currentState.getMovidaPorProfundidad(2);
-	}
+	protected abstract Movida getMejorMovida();
 
 	public boolean ejecutarMovidaDeEnemigo() {
 		Movida movida = getMejorMovida();

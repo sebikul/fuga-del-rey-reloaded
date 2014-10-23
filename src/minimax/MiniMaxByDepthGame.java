@@ -1,6 +1,7 @@
 package minimax;
 
 import models.Game;
+import models.Movida;
 
 public class MiniMaxByDepthGame extends MiniMaxGame {
 
@@ -12,5 +13,14 @@ public class MiniMaxByDepthGame extends MiniMaxGame {
 
 		this.depth = depth;
 	}
+
+	@Override
+	protected Movida getMejorMovida() {
+		 
+				return currentState.getMovidaPorProfundidad(depth);
+			
+	}
+	
+	
 
 }

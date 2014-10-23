@@ -5,6 +5,7 @@ import minimax.MiniMaxGame;
 import minimax.MiniMaxTimedGame;
 import models.Game;
 import models.GameFileParser;
+import models.Movida;
 import exceptions.InvalidFormatException;
 import gui.GraphicalBoard;
 
@@ -117,6 +118,8 @@ public class Main {
 
 				game = new MiniMaxByDepthGame(juegoArchivo, prune, saveTree,
 						param);
+				
+				//TODO
 
 			} else {
 
@@ -124,8 +127,17 @@ public class Main {
 						param);
 
 			}
-
-			System.out.println(game.getMejorMovida());
+			
+			//TODO por turno
+			//Movida movida = game.getMejorMovida();
+//			if(movida ==null){
+//				System.out.println("No se ha podido calcular jugada");
+//			}else{
+//				System.out.println(movida);
+//			}
+//				
+				
+			
 
 		}
 

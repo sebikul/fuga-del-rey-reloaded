@@ -163,6 +163,10 @@ public class GraphicalBoard {
 
 		frame.setVisible(true);
 
+		if(game.getCurrentGame().getTurno()==Jugador.ENEMIGO){
+			ejecutarMovidaDeMaquina();
+		}
+		
 		actualizarPantalla();
 
 	}

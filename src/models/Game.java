@@ -55,10 +55,7 @@ public class Game {
 
 		int valor = cantidadDeFichas[Jugador.ENEMIGO.getIndice()]
 				- cantidadDeFichas[Jugador.GUARDIA.getIndice()];
-		//
-		// if (turno == Jugador.GUARDIA) {
-		// valor = valor * -1;
-		// }
+
 
 		int bloqueos = 0;
 
@@ -83,7 +80,12 @@ public class Game {
 			}
 
 		}
-
+		//
+		// if (turno == Jugador.GUARDIA) {
+		// valor = valor * -1;
+		// }
+		
+		
 		return valor + 2 * bloqueos;
 	}
 
