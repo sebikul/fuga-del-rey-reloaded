@@ -135,6 +135,10 @@ public class GraphicalBoard {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 
+				if (game.getCurrentGame().getTurno() == Jugador.ENEMIGO) {
+					return;
+				}
+
 				int fila = table.rowAtPoint(e.getPoint());
 				int columna = table.columnAtPoint(e.getPoint());
 
@@ -163,10 +167,10 @@ public class GraphicalBoard {
 
 		frame.setVisible(true);
 
-		if(game.getCurrentGame().getTurno()==Jugador.ENEMIGO){
+		if (game.getCurrentGame().getTurno() == Jugador.ENEMIGO) {
 			ejecutarMovidaDeMaquina();
 		}
-		
+
 		actualizarPantalla();
 
 	}

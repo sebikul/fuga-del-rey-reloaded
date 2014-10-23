@@ -56,12 +56,13 @@ public class Game {
 		int valor = cantidadDeFichas[Jugador.ENEMIGO.getIndice()]
 				- cantidadDeFichas[Jugador.GUARDIA.getIndice()];
 
-
 		int bloqueos = 0;
 
 		Punto rey = buscarAlRey();
-		
-		assert rey!=null;
+
+		if (rey == null) {
+			return Integer.MAX_VALUE;
+		}
 
 		for (int columna = rey.getColumna() - 1; columna <= rey.getColumna() + 1; columna++) {
 			for (int fila = rey.getFila() - 1; fila <= rey.getFila() + 1; fila++) {
@@ -80,12 +81,7 @@ public class Game {
 			}
 
 		}
-		//
-		// if (turno == Jugador.GUARDIA) {
-		// valor = valor * -1;
-		// }
-		
-		
+
 		return valor + 2 * bloqueos;
 	}
 

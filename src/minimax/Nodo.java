@@ -52,7 +52,13 @@ public class Nodo {
 
 						game.mover(movida);
 
-						movida.setValor(game.valorMagico());
+						int signo = 1;
+
+						if (game.getTurno() == Jugador.GUARDIA) {
+							signo = -1;
+						}
+
+						movida.setValor(game.valorMagico() * signo);
 					} catch (MovimientoInvalidoException
 							| BoardPointOutOfBoundsException
 							| MovimientoBloqueadoException e) {
@@ -65,26 +71,18 @@ public class Nodo {
 			}
 		}
 
-		
+		if (profundidad != 1) {
 
-		if (profundidad == 1) {
+			for (Nodo nodo : hijos.keySet()) {
 
-			if (estado.getTurno() == Jugador.ENEMIGO) {
-				return Collections.max(hijos.values());
-			} else {
-				return Collections.min(hijos.values());
+				Movida movida = hijos.get(nodo);
+
+				Movida nuevaMovida = getMovidaPorProfundidad(nodo.estado,
+						profundidad - 1);
+
+				movida.setValor(nuevaMovida.getValor());
+
 			}
-
-		}
-
-		for (Nodo nodo : hijos.keySet()) {
-
-			Movida movida = hijos.get(nodo);
-
-			Movida nuevaMovida = getMovidaPorProfundidad(estado,
-					profundidad - 1);
-
-			movida.setValor(nuevaMovida.getValor());
 
 		}
 
@@ -93,7 +91,6 @@ public class Nodo {
 		} else {
 			return Collections.min(hijos.values());
 		}
-
 
 	}
 
