@@ -19,7 +19,7 @@ public abstract class MiniMaxGame {
 
 	public MiniMaxGame(Game juegoInicial, boolean prune, boolean saveTree) {
 
-		currentState = new Nodo(juegoInicial);
+		currentState = new Nodo(juegoInicial, null);
 
 		this.prune = prune;
 		this.saveTree = saveTree;
@@ -42,7 +42,7 @@ public abstract class MiniMaxGame {
 			e.printStackTrace();
 		}
 
-		currentState = new Nodo(currentState.getEstado());
+		currentState = new Nodo(currentState.getEstado(), null);
 
 		if (result != null) {
 			return true;
@@ -63,10 +63,10 @@ public abstract class MiniMaxGame {
 
 			Nodo nodo = queue.poll();
 
-			for (Entry<Nodo, Movida> entry : nodo.getHijos().entrySet()) {
+			for (Nodo hijo : nodo.getHijos()) {
 
-				System.out.println(entry.getValue());
-				queue.add(entry.getKey());
+				System.out.println(hijo);
+				queue.add(hijo);
 
 			}
 

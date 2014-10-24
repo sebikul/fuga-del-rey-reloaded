@@ -1,8 +1,8 @@
 package minimax;
 
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import models.Ficha;
 import models.Game;
@@ -13,12 +13,15 @@ import exceptions.BoardPointOutOfBoundsException;
 import exceptions.MovimientoBloqueadoException;
 import exceptions.MovimientoInvalidoException;
 
-public class Nodo {
+public class Nodo implements Comparable<Nodo> {
 
 	private Game estado;
-	private Map<Nodo, Movida> hijos = new HashMap<Nodo, Movida>();
 
-	public Nodo(Game estado) {
+	private Movida movida;
+	private List<Nodo> hijos = new ArrayList<Nodo>();
+
+	public Nodo(Game estado, Movida movida) {
+		this.movida = movida;
 		this.estado = estado;
 	}
 
@@ -66,7 +69,7 @@ public class Nodo {
 						System.out.println("Nodo.getMovidaPorProfundidad()");
 					}
 
-					hijos.put(new Nodo(game), movida);
+					hijos.add(new Nodo(game, movida));
 				}
 
 			}
@@ -75,24 +78,26 @@ public class Nodo {
 		if (profundidad != 1) {
 
 			try {
-				for (Nodo hijo : hijos.keySet()) {
+				for (Nodo hijo : hijos) {
 
 					Movida nuevaMovida = getMovidaPorProfundidad(hijo,
 							profundidad - 1);
 
-					hijos.get(hijo).setValor(nuevaMovida.getValor());
+					hijo.getMovida().setValor(nuevaMovida.getValor());
 
 				}
 			} catch (Exception e) {
-				System.out.println("Nodo.getMovidaPorProfundidad()");
+				System.out.println(e.getStackTrace());
+				
+
 			}
 
 		}
 
 		if (estado.getTurno() == Jugador.ENEMIGO) {
-			return Collections.max(hijos.values());
+			return Collections.max(hijos).getMovida();
 		} else {
-			return Collections.min(hijos.values());
+			return Collections.min(hijos).getMovida();
 		}
 
 	}
@@ -126,7 +131,21 @@ public class Nodo {
 		return estado;
 	}
 
-	public Map<Nodo, Movida> getHijos() {
-		return Collections.unmodifiableMap(hijos);
+	@Override
+	public int compareTo(Nodo o) {
+
+		return movida.getValor() - o.getMovida().getValor();
+	}
+
+	public List<Nodo> getHijos() {
+		return Collections.unmodifiableList(hijos);
+	}
+
+	public Movida getMovida() {
+		return movida;
+	}
+
+	public void setMovida(Movida movida) {
+		this.movida = movida;
 	}
 }

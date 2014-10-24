@@ -1,6 +1,6 @@
 package models;
 
-public class Movida implements Comparable<Movida> {
+public class Movida {
 
 	private final Punto destino;
 
@@ -24,11 +24,6 @@ public class Movida implements Comparable<Movida> {
 		this.valor = valor;
 	}
 
-	@Override
-	public int compareTo(Movida o) {
-
-		return valor - o.getValor();
-	}
 
 	@Override
 	public boolean equals(Object obj) {
