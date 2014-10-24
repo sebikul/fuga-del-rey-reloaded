@@ -35,17 +35,12 @@ public class Nodo implements Comparable<Nodo> {
 
 		if (profundidad != 1) {
 
-			try {
-				for (Nodo hijo : hijos) {
+			for (Nodo hijo : nodo.hijos) {
 
-					Movida nuevaMovida = getMovidaPorProfundidad(hijo,
-							profundidad - 1);
+				Movida nuevaMovida = getMovidaPorProfundidad(hijo,
+						profundidad - 1);
 
-					hijo.getMovida().setValor(nuevaMovida.getValor());
-
-				}
-			} catch (Exception e) {
-				System.out.println(e.getStackTrace());
+				hijo.getMovida().setValor(nuevaMovida.getValor());
 
 			}
 
@@ -106,7 +101,6 @@ public class Nodo implements Comparable<Nodo> {
 		}
 
 	}
-
 
 	@Override
 	public int hashCode() {
