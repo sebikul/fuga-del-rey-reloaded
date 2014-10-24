@@ -508,11 +508,12 @@ public class Game {
 
 		int valor = cantidadDeFichas[Jugador.ENEMIGO.getIndice()]
 				- cantidadDeFichas[Jugador.GUARDIA.getIndice()];
-
+		
 		int bloqueos = 0;
 
 		Punto rey = buscarAlRey();
-
+		
+		
 		if (rey == null) {
 			return Integer.MAX_VALUE;
 		}
@@ -532,10 +533,12 @@ public class Game {
 			}
 
 		}
-
-		System.out.println(valor);
-
-		return valor + 2 * bloqueos;
+		
+		System.out.println("Valor: " + valor);
+		System.out.println("LA CANTIDAD DE BLOQUEOS ES: "+ bloqueos);
+		int heuristica = valor + 2*bloqueos;
+		System.out.println("EL VALORCITO ES : "+ heuristica);
+		return heuristica;
 	}
 
 	/*

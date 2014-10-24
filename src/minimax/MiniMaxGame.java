@@ -32,6 +32,8 @@ public abstract class MiniMaxGame {
 
 	public boolean ejecutarMovidaDeEnemigo() {
 		Movida movida = getMejorMovida();
+		System.out.println("El valor magico de angie: " + movida.getValor());
+		
 
 		Jugador result = null;
 		try {

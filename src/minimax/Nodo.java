@@ -71,24 +71,28 @@ public class Nodo implements Comparable<Nodo> {
 						continue;
 					}
 				} catch (BoardPointOutOfBoundsException e1) {
-
+					e1.printStackTrace();
 				}
 
 				for (Movida movida : nodo.estado.getPosiblesMovidas(new Punto(
 						fila, columna))) {
 
+					
 					Game game = nodo.estado.copiar();
 
 					try {
-
-						Jugador result = game.mover(movida);
 
 						int signo = 1;
 
 						if (game.getTurno() == Jugador.GUARDIA) {
 							signo = -1;
 						}
+						
+						Jugador result = game.mover(movida);
 
+
+						
+						System.out.println(game.valorMagico());
 						movida.setValor(((result == null) ? game.valorMagico()
 								: Integer.MAX_VALUE) * signo);
 					} catch (MovimientoInvalidoException
