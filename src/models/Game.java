@@ -512,20 +512,18 @@ public class Game {
 			return Integer.MAX_VALUE;
 		}
 
-		for (int columna = rey.getColumna() - 2; columna <= rey.getColumna() + 1; columna++) {
-			for (int fila = rey.getFila() - 2; fila <= rey.getFila() + 1; fila++) {
+		for (int columna = rey.getColumna() - 1; columna <= rey.getColumna() + 1; columna++) {
+			for (int fila = rey.getFila() - 1; fila <= rey.getFila() + 1; fila++) {
 
 				if (fila == rey.getFila() && columna == rey.getColumna()) {
 					continue;
 				}
 
-				try {
-					if (getFichaAt(fila, columna) == Ficha.ENEMIGO) {
-						bloqueos++;
-					}
-				} catch (BoardPointOutOfBoundsException e) {
-					e.printStackTrace();
+				if (puntoEsValido(new Punto(fila, columna))
+						&& tablero[fila][columna] == Ficha.ENEMIGO) {
+					bloqueos++;
 				}
+
 			}
 
 		}
