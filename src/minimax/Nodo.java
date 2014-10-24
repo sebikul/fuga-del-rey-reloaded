@@ -66,7 +66,7 @@ public class Nodo implements Comparable<Nodo> {
 					Ficha ficha = nodo.estado.getFichaAt(fila, columna);
 
 					if ((nodo.estado.getTurno() == Jugador.ENEMIGO && ficha != Ficha.ENEMIGO)
-							|| (nodo.estado.getTurno() == Jugador.GUARDIA && (ficha != Ficha.GUARDIA || ficha != Ficha.REY))) {
+							|| (nodo.estado.getTurno() == Jugador.GUARDIA && (ficha != Ficha.GUARDIA && ficha != Ficha.REY))) {
 						continue;
 					}
 				} catch (BoardPointOutOfBoundsException e1) {
