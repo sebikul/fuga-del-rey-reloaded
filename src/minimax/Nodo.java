@@ -31,6 +31,36 @@ public class Nodo implements Comparable<Nodo> {
 
 	private Movida getMovidaPorProfundidad(Nodo nodo, int profundidad) {
 
+		calcularNodosHijo(nodo);
+
+		if (profundidad != 1) {
+
+			try {
+				for (Nodo hijo : hijos) {
+
+					Movida nuevaMovida = getMovidaPorProfundidad(hijo,
+							profundidad - 1);
+
+					hijo.getMovida().setValor(nuevaMovida.getValor());
+
+				}
+			} catch (Exception e) {
+				System.out.println(e.getStackTrace());
+
+			}
+
+		}
+
+		if (estado.getTurno() == Jugador.ENEMIGO) {
+			return Collections.max(hijos).getMovida();
+		} else {
+			return Collections.min(hijos).getMovida();
+		}
+
+	}
+
+	private void calcularNodosHijo(Nodo nodo) {
+
 		for (int fila = 0; fila < nodo.estado.getSize(); fila++) {
 			for (int columna = 0; columna < nodo.estado.getSize(); columna++) {
 
@@ -73,31 +103,6 @@ public class Nodo implements Comparable<Nodo> {
 				}
 
 			}
-		}
-
-		if (profundidad != 1) {
-
-			try {
-				for (Nodo hijo : hijos) {
-
-					Movida nuevaMovida = getMovidaPorProfundidad(hijo,
-							profundidad - 1);
-
-					hijo.getMovida().setValor(nuevaMovida.getValor());
-
-				}
-			} catch (Exception e) {
-				System.out.println(e.getStackTrace());
-				
-
-			}
-
-		}
-
-		if (estado.getTurno() == Jugador.ENEMIGO) {
-			return Collections.max(hijos).getMovida();
-		} else {
-			return Collections.min(hijos).getMovida();
 		}
 
 	}
