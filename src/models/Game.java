@@ -83,6 +83,11 @@ public class Game {
 			}
 		}
 
+		tmpgame.cantidadDeFichas[Jugador.ENEMIGO.getIndice()] = cantidadDeFichas[Jugador.ENEMIGO
+				.getIndice()];
+		tmpgame.cantidadDeFichas[Jugador.GUARDIA.getIndice()] = cantidadDeFichas[Jugador.GUARDIA
+				.getIndice()];
+
 		return tmpgame;
 	}
 
@@ -512,8 +517,8 @@ public class Game {
 			return Integer.MAX_VALUE;
 		}
 
-		for (int columna = rey.getColumna() - 1; columna <= rey.getColumna() + 1; columna++) {
-			for (int fila = rey.getFila() - 1; fila <= rey.getFila() + 1; fila++) {
+		for (int columna = rey.getColumna() - 2; columna <= rey.getColumna() + 2; columna++) {
+			for (int fila = rey.getFila() - 2; fila <= rey.getFila() + 2; fila++) {
 
 				if (fila == rey.getFila() && columna == rey.getColumna()) {
 					continue;
@@ -527,6 +532,8 @@ public class Game {
 			}
 
 		}
+
+		System.out.println(valor);
 
 		return valor + 2 * bloqueos;
 	}
@@ -612,6 +619,13 @@ public class Game {
 		cambiarJugador();
 
 		return null;
+
+	}
+
+	public void setCantidadDeFichas(int enemigos, int guardias) {
+
+		cantidadDeFichas[Jugador.ENEMIGO.getIndice()] = enemigos;
+		cantidadDeFichas[Jugador.GUARDIA.getIndice()] = guardias;
 
 	}
 

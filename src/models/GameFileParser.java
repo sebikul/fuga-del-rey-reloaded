@@ -35,6 +35,9 @@ public class GameFileParser {
 
 		int i = 0;
 
+		int guardias = 0;
+		int enemigos = 0;
+
 		Ficha[][] tablero = null;
 
 		try {
@@ -54,6 +57,15 @@ public class GameFileParser {
 				tablero[i] = new Ficha[size];
 				for (int j = 0; j < size; j++) {
 					tablero[i][j] = Ficha.fromChar(lineArray[j]);
+
+					Ficha ficha = tablero[i][j];
+
+					if (ficha.getJugador() == Jugador.GUARDIA) {
+						guardias++;
+					} else if (ficha.getJugador() == Jugador.ENEMIGO) {
+						enemigos++;
+					}
+
 				}
 
 				i++;
@@ -73,7 +85,11 @@ public class GameFileParser {
 
 		tablero[0][0] = tablero[0][size - 1] = tablero[size - 1][0] = tablero[size - 1][size - 1] = Ficha.CASTILLO;
 
-		return new Game(size, tablero, turno);
+		Game game = new Game(size, tablero, turno);
+
+		game.setCantidadDeFichas(enemigos, guardias);
+
+		return game;
 
 	}
 }

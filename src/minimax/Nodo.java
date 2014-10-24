@@ -40,7 +40,10 @@ public class Nodo implements Comparable<Nodo> {
 				Movida nuevaMovida = getMovidaPorProfundidad(hijo,
 						profundidad - 1);
 
-				hijo.getMovida().setValor(nuevaMovida.getValor());
+				if (Math.abs(nuevaMovida.getValor()) == Integer.MAX_VALUE) {
+					return hijo.movida;
+				}
+				hijo.movida.setValor(nuevaMovida.getValor());
 
 			}
 
