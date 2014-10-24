@@ -189,6 +189,7 @@ public class GraphicalBoard {
 			result = game.getCurrentGame().mover(origen, destino);
 			if (result != null) {
 				System.out.println("El jugador " + result + " ha ganado");
+				System.out.println(game.getCurrentGame());
 				System.exit(0);
 			}
 
@@ -217,6 +218,7 @@ public class GraphicalBoard {
 
 		if (game.ejecutarMovidaDeEnemigo()) {
 			System.out.println("El enemigo ha ganado");
+			System.out.println(game.getCurrentGame());
 			System.exit(0);
 		}
 

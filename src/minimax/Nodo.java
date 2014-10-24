@@ -107,11 +107,13 @@ public class Nodo implements Comparable<Nodo> {
 
 	}
 
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((estado == null) ? 0 : estado.hashCode());
+		result = prime * result + ((movida == null) ? 0 : movida.hashCode());
 		return result;
 	}
 
@@ -128,6 +130,11 @@ public class Nodo implements Comparable<Nodo> {
 			if (other.estado != null)
 				return false;
 		} else if (!estado.equals(other.estado))
+			return false;
+		if (movida == null) {
+			if (other.movida != null)
+				return false;
+		} else if (!movida.equals(other.movida))
 			return false;
 		return true;
 	}
