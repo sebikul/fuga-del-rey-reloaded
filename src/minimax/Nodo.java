@@ -31,8 +31,6 @@ public class Nodo implements Comparable<Nodo> {
 
 	private Movida getMovidaPorProfundidad(Nodo nodo, int profundidad) {
 
-		System.out.println(profundidad);
-
 		calcularNodosHijo(nodo);
 
 		if (profundidad > 1) {

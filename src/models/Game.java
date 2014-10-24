@@ -41,19 +41,19 @@ public class Game {
 
 	}
 
-	// private Punto buscarAlRey() {
-	//
-	// for (int fila = 0; fila < size; fila++) {
-	// for (int columna = 0; columna < size; columna++) {
-	// if (tablero[fila][columna] == Ficha.REY) {
-	// return new Punto(fila, columna);
-	// }
-	// }
-	// }
-	//
-	// return null;
-	//
-	// }
+	private Punto buscarAlRey() {
+
+		for (int fila = 0; fila < size; fila++) {
+			for (int columna = 0; columna < size; columna++) {
+				if (tablero[fila][columna] == Ficha.REY) {
+					return new Punto(fila, columna);
+				}
+			}
+		}
+
+		return null;
+
+	}
 
 	/*
 	 * * Cambia de jugador en la estructura _*juego
@@ -506,31 +506,29 @@ public class Game {
 
 		int bloqueos = 0;
 
-		// Punto rey = buscarAlRey();
-		//
-		// if (rey == null) {
-		// return Integer.MAX_VALUE;
-		// }
-		//
-		// for (int columna = rey.getColumna() - 1; columna <= rey.getColumna()
-		// + 1; columna++) {
-		// for (int fila = rey.getFila() - 1; fila <= rey.getFila() + 1; fila++)
-		// {
-		//
-		// if (fila == rey.getFila() && columna == rey.getColumna()) {
-		// continue;
-		// }
-		//
-		// try {
-		// if (getFichaAt(fila, columna) == Ficha.ENEMIGO) {
-		// bloqueos++;
-		// }
-		// } catch (BoardPointOutOfBoundsException e) {
-		// e.printStackTrace();
-		// }
-		// }
-		//
-		// }
+		Punto rey = buscarAlRey();
+
+		if (rey == null) {
+			return Integer.MAX_VALUE;
+		}
+
+		for (int columna = rey.getColumna() - 2; columna <= rey.getColumna() + 1; columna++) {
+			for (int fila = rey.getFila() - 2; fila <= rey.getFila() + 1; fila++) {
+
+				if (fila == rey.getFila() && columna == rey.getColumna()) {
+					continue;
+				}
+
+				try {
+					if (getFichaAt(fila, columna) == Ficha.ENEMIGO) {
+						bloqueos++;
+					}
+				} catch (BoardPointOutOfBoundsException e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
 
 		return valor + 2 * bloqueos;
 	}
@@ -572,9 +570,8 @@ public class Game {
 
 									pos_aliado = new Punto(fil_aux, col_aux);
 
-									if (!puntoEsValido(pos_aliado)
-											|| tablero[pos_aliado.getFila()][pos_aliado
-													.getColumna()] != Ficha.VACIO) {
+									if (esOponente(pos_aliado)
+											|| !puntoEsValido(pos_aliado)) {
 										bloqueos++;
 									}
 								}
