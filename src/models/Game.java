@@ -508,12 +508,13 @@ public class Game {
 
 		int valor = cantidadDeFichas[Jugador.ENEMIGO.getIndice()]
 				- cantidadDeFichas[Jugador.GUARDIA.getIndice()];
-		
+
 		int bloqueos = 0;
+		int cuadranteMenor = 0;
+		int matarAlRey = 0;
 
 		Punto rey = buscarAlRey();
-		
-		
+
 		if (rey == null) {
 			return Integer.MAX_VALUE;
 		}
@@ -525,20 +526,57 @@ public class Game {
 					continue;
 				}
 
+				
 				if (puntoEsValido(new Punto(fila, columna))
 						&& tablero[fila][columna] == Ficha.ENEMIGO) {
 					bloqueos++;
+				}
+				
+				if((puntoEsValido(new Punto(fila, columna))
+						&& tablero[fila][columna] == Ficha.ENEMIGO) && cuadranteMenor(fila, columna, rey.getFila(),rey.getColumna())){
+					cuadranteMenor++;
+				}
+
+				if ((puntoEsValido(new Punto(fila, columna))
+						&& tablero[fila][columna] == Ficha.ENEMIGO) && estaEncerrandoAlRey(fila, columna, rey.getFila(),
+						rey.getColumna())) {
+					matarAlRey++;
 				}
 
 			}
 
 		}
-		
+
 		System.out.println("Valor: " + valor);
-		System.out.println("LA CANTIDAD DE BLOQUEOS ES: "+ bloqueos);
-		int heuristica = valor + 2*bloqueos;
-		System.out.println("EL VALORCITO ES : "+ heuristica);
+		System.out.println("LA CANTIDAD DE BLOQUEOS ES: " + bloqueos);
+		int heuristica = valor + 2 * bloqueos + 3*cuadranteMenor + 6*matarAlRey;
+		System.out.println("EL VALORCITO ES : " + heuristica );
 		return heuristica;
+	}
+
+	/*
+	 * * Verifica si estoy en uno de los cuatro puntos validos para matar al Rey
+	 */
+
+	private boolean estaEncerrandoAlRey(int filaActual, int columnaActual,
+			int filaRey, int columnaRey) {
+		return (filaActual == filaRey && columnaActual == columnaRey + 1)
+				|| (filaActual == filaRey && columnaActual == columnaRey - 1)
+				|| (filaActual + 1 == filaRey && columnaActual == columnaRey)
+				|| (filaActual - 1 == filaRey && columnaActual == columnaRey);
+	}
+	
+	
+	/*
+	 * * Verifica si estoy en uno de los cuatro puntos que no matan al rey, pero estan en el cuadrante mas chico
+	 */
+	
+	private boolean cuadranteMenor(int filaActual, int columnaActual,
+			int filaRey, int columnaRey) {
+		return (filaActual == filaRey -1 && columnaActual == columnaRey - 1)
+				|| (filaActual == filaRey+1 && columnaActual == columnaRey + 1)
+				|| (filaActual == filaRey-1 && columnaActual == columnaRey +1 )
+				|| (filaActual  == filaRey+1 && columnaActual == columnaRey-1);
 	}
 
 	/*
