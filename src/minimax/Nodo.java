@@ -31,9 +31,11 @@ public class Nodo implements Comparable<Nodo> {
 
 	private Movida getMovidaPorProfundidad(Nodo nodo, int profundidad) {
 
+		System.out.println(profundidad);
+
 		calcularNodosHijo(nodo);
 
-		if (profundidad != 1) {
+		if (profundidad > 1) {
 
 			for (Nodo hijo : nodo.hijos) {
 
@@ -94,7 +96,7 @@ public class Nodo implements Comparable<Nodo> {
 						System.out.println("Nodo.getMovidaPorProfundidad()");
 					}
 
-					hijos.add(new Nodo(game, movida));
+					nodo.hijos.add(new Nodo(game, movida));
 				}
 
 			}
