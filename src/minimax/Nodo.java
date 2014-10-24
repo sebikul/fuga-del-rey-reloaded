@@ -23,30 +23,30 @@ public class Nodo {
 	}
 
 	public Movida getMovidaPorProfundidad(int profundidad) {
-		return getMovidaPorProfundidad(estado, profundidad);
+		return getMovidaPorProfundidad(this, profundidad);
 	}
 
-	private Movida getMovidaPorProfundidad(Game estado, int profundidad) {
+	private Movida getMovidaPorProfundidad(Nodo nodo, int profundidad) {
 
-		for (int fila = 0; fila < estado.getSize(); fila++) {
-			for (int columna = 0; columna < estado.getSize(); columna++) {
+		for (int fila = 0; fila < nodo.estado.getSize(); fila++) {
+			for (int columna = 0; columna < nodo.estado.getSize(); columna++) {
 
 				try {
 
-					Ficha ficha = estado.getFichaAt(fila, columna);
+					Ficha ficha = nodo.estado.getFichaAt(fila, columna);
 
-					if ((estado.getTurno() == Jugador.ENEMIGO && ficha != Ficha.ENEMIGO)
-							|| (estado.getTurno() == Jugador.GUARDIA && (ficha != Ficha.GUARDIA || ficha != Ficha.REY))) {
+					if ((nodo.estado.getTurno() == Jugador.ENEMIGO && ficha != Ficha.ENEMIGO)
+							|| (nodo.estado.getTurno() == Jugador.GUARDIA && (ficha != Ficha.GUARDIA || ficha != Ficha.REY))) {
 						continue;
 					}
 				} catch (BoardPointOutOfBoundsException e1) {
 
 				}
 
-				for (Movida movida : estado.getPosiblesMovidas(new Punto(fila,
-						columna))) {
+				for (Movida movida : nodo.estado.getPosiblesMovidas(new Punto(
+						fila, columna))) {
 
-					Game game = estado.copiar();
+					Game game = nodo.estado.copiar();
 
 					try {
 
@@ -63,7 +63,7 @@ public class Nodo {
 					} catch (MovimientoInvalidoException
 							| BoardPointOutOfBoundsException
 							| MovimientoBloqueadoException e) {
-
+						System.out.println("Nodo.getMovidaPorProfundidad()");
 					}
 
 					hijos.put(new Nodo(game), movida);
@@ -74,15 +74,17 @@ public class Nodo {
 
 		if (profundidad != 1) {
 
-			for (Nodo nodo : hijos.keySet()) {
+			try {
+				for (Nodo hijo : hijos.keySet()) {
 
-				Movida movida = hijos.get(nodo);
+					Movida nuevaMovida = getMovidaPorProfundidad(hijo,
+							profundidad - 1);
 
-				Movida nuevaMovida = getMovidaPorProfundidad(nodo.estado,
-						profundidad - 1);
+					hijos.get(hijo).setValor(nuevaMovida.getValor());
 
-				movida.setValor(nuevaMovida.getValor());
-
+				}
+			} catch (Exception e) {
+				System.out.println("Nodo.getMovidaPorProfundidad()");
 			}
 
 		}
