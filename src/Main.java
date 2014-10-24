@@ -5,7 +5,6 @@ import minimax.MiniMaxGame;
 import minimax.MiniMaxTimedGame;
 import models.Game;
 import models.GameFileParser;
-import models.Movida;
 import exceptions.InvalidFormatException;
 import gui.GraphicalBoard;
 
