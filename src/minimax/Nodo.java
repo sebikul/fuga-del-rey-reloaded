@@ -50,7 +50,7 @@ public class Nodo {
 
 					try {
 
-						game.mover(movida);
+						Jugador result = game.mover(movida);
 
 						int signo = 1;
 
@@ -58,7 +58,8 @@ public class Nodo {
 							signo = -1;
 						}
 
-						movida.setValor(game.valorMagico() * signo);
+						movida.setValor(((result == null) ? game.valorMagico()
+								: Integer.MAX_VALUE) * signo);
 					} catch (MovimientoInvalidoException
 							| BoardPointOutOfBoundsException
 							| MovimientoBloqueadoException e) {
