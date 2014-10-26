@@ -1,3 +1,8 @@
 - Hacer que cuando el rey gana no se cierre la aplicación y que muestre un cartelito que ganó.
 - Mejorar la heurística, ver que los de la izquierda no los mueve y que el de arriba repite los movimientos una y otra vez. Arriba y abajo cuando el rey esta encerrado pero
 la unica posibilidad de que muera es que se muevan los de la izquierda y no están haciendo. Ver captura de pantalla.
+
+- Todavía el rey no muere para todos los casos. (ver captura de pantalla en carpeta Leeme!)
+ENUNCIADO: El Rey sólo es capturado si los cuatro cuadros alrededor de él (en sentido horizontal y vertical) son
+ocupados por las fichas enemigas. Puede ser capturado con sólo 3 si el Rey se encuentra en el borde, o
+con alguna ficha defensora en posición adyacente.
