@@ -531,18 +531,20 @@ public class Game {
 					bloqueos++;
 				}
 
-				if ((puntoEsValido(new Punto(fila, columna)) && tablero[fila][columna] == Ficha.ENEMIGO)
-						&& cuadranteMenor(fila, columna, rey.getFila(),
-								rey.getColumna())) {
-					cuadranteMenor++;
-				}
+				if (puntoEsValido(new Punto(fila, columna))
+						&& tablero[fila][columna] == Ficha.ENEMIGO) {
 
-				if ((puntoEsValido(new Punto(fila, columna)) && tablero[fila][columna] == Ficha.ENEMIGO)
-						&& estaEncerrandoAlRey(fila, columna, rey.getFila(),
-								rey.getColumna())) {
-					matarAlRey++;
-				}
+					if (cuadranteMenor(fila, columna, rey.getFila(),
+							rey.getColumna())) {
+						cuadranteMenor++;
+					}
 
+					if (estaEncerrandoAlRey(fila, columna, rey.getFila(),
+							rey.getColumna())) {
+						matarAlRey++;
+					}
+
+				}
 			}
 
 		}
