@@ -14,7 +14,7 @@ public abstract class MiniMaxGame {
 
 	protected Nodo currentState;
 	private boolean prune = false;
-	private boolean saveTree = false;
+	protected boolean saveTree = false;
 
 	public MiniMaxGame(Game juegoInicial, boolean prune, boolean saveTree) {
 
@@ -32,14 +32,14 @@ public abstract class MiniMaxGame {
 
 	public boolean ejecutarMovidaDeEnemigo() {
 		Movida movida = getMejorMovida();
-		
+
 		System.out.println("El valor magico de angie: " + movida.getValor());
-		
-		
+
 		Jugador result = null;
 		try {
 			result = currentState.getEstado().mover(movida);
-			System.out.println("LA MOVIDA A REALIZAR ES    --ORIGEN:" + movida.getOrigen() + "--DESTINO:" + movida.getDestino() );
+			System.out.println("LA MOVIDA A REALIZAR ES    --ORIGEN:"
+					+ movida.getOrigen() + "--DESTINO:" + movida.getDestino());
 		} catch (MovimientoInvalidoException | BoardPointOutOfBoundsException
 				| MovimientoBloqueadoException e) {
 			e.printStackTrace();
@@ -62,13 +62,25 @@ public abstract class MiniMaxGame {
 		Queue<Nodo> queue = new LinkedList<Nodo>();
 		queue.add(currentState);
 
+		long i = 0;
+
 		while (!queue.isEmpty()) {
 
 			Nodo nodo = queue.poll();
 
+			String dotLine = "" + i + "[label=\"" + nodo.getMovida() + "\"";
+
+			if (nodo.getEstado().getTurno() == Jugador.GUARDIA) {
+				dotLine += " shape=box";
+			}
+
+			dotLine += "]";
+
+			System.out.println(dotLine);
+
 			for (Nodo hijo : nodo.getHijos()) {
 
-				System.out.println(hijo);
+				// System.out.println(hijo);
 				queue.add(hijo);
 
 			}

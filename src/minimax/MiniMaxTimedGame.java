@@ -31,6 +31,10 @@ public class MiniMaxTimedGame extends MiniMaxGame {
 
 		assert movida != null;
 
+		if (this.saveTree) {
+			this.printGraphVizCode();
+		}
+
 		return movida;
 
 	}

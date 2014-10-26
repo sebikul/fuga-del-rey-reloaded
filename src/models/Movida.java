@@ -10,8 +10,7 @@ public class Movida {
 
 	@Override
 	public String toString() {
-		return "Movida [destino=" + destino + ", origen=" + origen + ", valor="
-				+ valor + "]";
+		return "" + origen + destino + valor;
 	}
 
 	public Movida(Punto origen, Punto destino) {
@@ -23,7 +22,6 @@ public class Movida {
 		this.destino = destino;
 		this.valor = valor;
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {

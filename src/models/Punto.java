@@ -44,7 +44,7 @@ public class Punto {
 
 	@Override
 	public String toString() {
-		return "Punto [fila=" + fila + ", columna=" + columna + "]";
+		return "(" + fila + ", " + columna + ")";
 	}
 
 	public Ficha getFicha() {
