@@ -153,7 +153,7 @@ public class GraphicalBoard {
 			ejecutarMovidaDeMaquina();
 		}
 
-		// ME PARECE QUE NO HACE FALTA ESTE ACTUALIZAR actualizarPantalla();
+		actualizarPantalla();
 
 	}
 	
