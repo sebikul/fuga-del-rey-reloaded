@@ -526,20 +526,20 @@ public class Game {
 					continue;
 				}
 
-				
 				if (puntoEsValido(new Punto(fila, columna))
 						&& tablero[fila][columna] == Ficha.ENEMIGO) {
 					bloqueos++;
 				}
-				
-				if((puntoEsValido(new Punto(fila, columna))
-						&& tablero[fila][columna] == Ficha.ENEMIGO) && cuadranteMenor(fila, columna, rey.getFila(),rey.getColumna())){
+
+				if ((puntoEsValido(new Punto(fila, columna)) && tablero[fila][columna] == Ficha.ENEMIGO)
+						&& cuadranteMenor(fila, columna, rey.getFila(),
+								rey.getColumna())) {
 					cuadranteMenor++;
 				}
 
-				if ((puntoEsValido(new Punto(fila, columna))
-						&& tablero[fila][columna] == Ficha.ENEMIGO) && estaEncerrandoAlRey(fila, columna, rey.getFila(),
-						rey.getColumna())) {
+				if ((puntoEsValido(new Punto(fila, columna)) && tablero[fila][columna] == Ficha.ENEMIGO)
+						&& estaEncerrandoAlRey(fila, columna, rey.getFila(),
+								rey.getColumna())) {
 					matarAlRey++;
 				}
 
@@ -547,10 +547,11 @@ public class Game {
 
 		}
 
-		System.out.println("Valor: " + valor);
-		System.out.println("LA CANTIDAD DE BLOQUEOS ES: " + bloqueos);
-		int heuristica = valor + 2 * bloqueos + 3*cuadranteMenor + 6*matarAlRey;
-		System.out.println("EL VALORCITO ES : " + heuristica );
+		// System.out.println("Valor: " + valor);
+		// System.out.println("LA CANTIDAD DE BLOQUEOS ES: " + bloqueos);
+		int heuristica = valor + 2 * bloqueos + 3 * cuadranteMenor + 6
+				* matarAlRey;
+		// System.out.println("EL VALORCITO ES : " + heuristica );
 		return heuristica;
 	}
 
@@ -565,18 +566,18 @@ public class Game {
 				|| (filaActual + 1 == filaRey && columnaActual == columnaRey)
 				|| (filaActual - 1 == filaRey && columnaActual == columnaRey);
 	}
-	
-	
+
 	/*
-	 * * Verifica si estoy en uno de los cuatro puntos que no matan al rey, pero estan en el cuadrante mas chico
+	 * * Verifica si estoy en uno de los cuatro puntos que no matan al rey, pero
+	 * estan en el cuadrante mas chico
 	 */
-	
+
 	private boolean cuadranteMenor(int filaActual, int columnaActual,
 			int filaRey, int columnaRey) {
-		return (filaActual == filaRey -1 && columnaActual == columnaRey - 1)
-				|| (filaActual == filaRey+1 && columnaActual == columnaRey + 1)
-				|| (filaActual == filaRey-1 && columnaActual == columnaRey +1 )
-				|| (filaActual  == filaRey+1 && columnaActual == columnaRey-1);
+		return (filaActual == filaRey - 1 && columnaActual == columnaRey - 1)
+				|| (filaActual == filaRey + 1 && columnaActual == columnaRey + 1)
+				|| (filaActual == filaRey - 1 && columnaActual == columnaRey + 1)
+				|| (filaActual == filaRey + 1 && columnaActual == columnaRey - 1);
 	}
 
 	/*
@@ -609,12 +610,12 @@ public class Game {
 
 						int bloqueos = 0;
 
+						int bloqueosPorGurdias = 0;
+
 						/* Verifica que el rey este rodeado por 4 aliados */
 						for (int col_aux = columna - 1; col_aux <= columna + 1; col_aux++) {
 							for (int fil_aux = fila - 1; fil_aux <= fila + 1; fil_aux++) {
 
-								
-								
 								if (!((fil_aux != fila && col_aux != columna) || (fil_aux == fila && col_aux == columna))) {
 
 									pos_aliado = new Punto(fil_aux, col_aux);
@@ -622,25 +623,25 @@ public class Game {
 									if (esAliado(pos_aliado)
 											|| !puntoEsValido(pos_aliado)) {
 										bloqueos++;
-										
+										// System.out.println("Rey bloqueado por "+pos_aliado);
+
+									} else if (esOponente(pos_aliado)) {
+										bloqueosPorGurdias++;
 									}
 								}
 
 							}
 
 						}
-						
-						
+
 						/* El rey esta rodeado */
-						if (bloqueos == 4) {
-							System.out.println("El Rey esta bloqueado y se lo comieron");
+						if (bloqueos == 4
+								|| (bloqueos == 3 && bloqueosPorGurdias == 1)) {
+							System.out
+									.println("El Rey esta bloqueado y se lo comieron");
 							tablero[fila][columna] = Ficha.REYMUERTO;
 							return Jugador.ENEMIGO;
 						}
-						
-						
-						
-
 
 					} else {
 						/*
@@ -665,11 +666,9 @@ public class Game {
 				}
 
 			}
-			
-			
+
 		}
 
-		
 		cambiarJugador();
 
 		return null;
