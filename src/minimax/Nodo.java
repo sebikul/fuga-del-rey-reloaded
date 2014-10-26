@@ -40,20 +40,29 @@ public class Nodo implements Comparable<Nodo> {
 				Movida nuevaMovida = hijo.getMovidaPorProfundidad(hijo,
 						profundidad - 1);
 
+				nuevaMovida.setElegida(true);
+
 				if (Math.abs(nuevaMovida.getValor()) == Integer.MAX_VALUE) {
 					return hijo.movida;
 				}
+
 				hijo.movida.setValor(nuevaMovida.getValor());
 
 			}
 
 		}
 
+		Movida movida;
+
 		if (estado.getTurno() == Jugador.ENEMIGO) {
-			return Collections.max(hijos).getMovida();
+			movida = Collections.max(hijos).getMovida();
 		} else {
-			return Collections.min(hijos).getMovida();
+			movida = Collections.min(hijos).getMovida();
 		}
+
+		movida.setElegida(true);
+
+		return movida;
 
 	}
 
@@ -89,7 +98,7 @@ public class Nodo implements Comparable<Nodo> {
 
 						Jugador result = game.mover(movida);
 
-						//System.out.println(game.valorMagico());
+						// System.out.println(game.valorMagico());
 						movida.setValor(((result == null) ? game.valorMagico()
 								: Integer.MAX_VALUE) * signo);
 					} catch (MovimientoInvalidoException

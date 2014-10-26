@@ -4,14 +4,11 @@ public class Movida {
 
 	private final Punto destino;
 
+	private boolean elegida = false;
+
 	private final Punto origen;
 
 	private int valor;
-
-	@Override
-	public String toString() {
-		return "" + origen + destino + valor;
-	}
 
 	public Movida(Punto origen, Punto destino) {
 		this(origen, destino, 0);
@@ -66,8 +63,21 @@ public class Movida {
 		return result;
 	}
 
+	public boolean isElegida() {
+		return elegida;
+	}
+
+	public void setElegida(boolean elegida) {
+		this.elegida = elegida;
+	}
+
 	public void setValor(int valor) {
 		this.valor = valor;
+	}
+
+	@Override
+	public String toString() {
+		return "" + origen + destino + valor;
 	}
 
 }
