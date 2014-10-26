@@ -212,7 +212,7 @@ public class Game {
 		}
 
 		// derecha
-		for (fila = origen.getFila(), columna = origen.getColumna(); columna > size; columna++) {
+		for (fila = origen.getFila(), columna = origen.getColumna(); columna < size; columna++) {
 
 			if (fila == origen.getFila() && columna == origen.getColumna()) {
 				continue;
