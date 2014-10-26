@@ -550,7 +550,9 @@ public class Game {
 		}
 
 		// System.out.println("Valor: " + valor);
-		// System.out.println("LA CANTIDAD DE BLOQUEOS ES: " + bloqueos);
+		 System.out.println("LA CANTIDAD DE BLOQUEOS ES: " + bloqueos);
+		 System.out.println("LA CANTIDAD DE CUADRANTEMENOR ES: " + cuadranteMenor);
+		 System.out.println("LA CANTIDAD DE MATARALREY ES: " + matarAlRey);
 		int heuristica = valor + 2 * bloqueos + 3 * cuadranteMenor + 6
 				* matarAlRey;
 		// System.out.println("EL VALORCITO ES : " + heuristica );

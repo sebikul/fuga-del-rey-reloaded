@@ -67,7 +67,7 @@ public class Nodo implements Comparable<Nodo> {
 	}
 
 	private void calcularNodosHijo(Nodo nodo) {
-
+		
 		for (int fila = 0; fila < nodo.estado.getSize(); fila++) {
 			for (int columna = 0; columna < nodo.estado.getSize(); columna++) {
 
@@ -82,10 +82,9 @@ public class Nodo implements Comparable<Nodo> {
 				} catch (BoardPointOutOfBoundsException e1) {
 					e1.printStackTrace();
 				}
-
+				
 				for (Movida movida : nodo.estado.getPosiblesMovidas(new Punto(
 						fila, columna))) {
-
 					Game game = nodo.estado.copiar();
 
 					try {
@@ -109,9 +108,12 @@ public class Nodo implements Comparable<Nodo> {
 
 					nodo.hijos.add(new Nodo(game, movida));
 				}
-
+		
 			}
+		
 		}
+		
+		
 
 	}
 
