@@ -104,7 +104,7 @@ public abstract class MiniMaxGame {
 
 			dotLine = "" + i + " [label=\"" + nodo.getMovida() + "\"";
 
-			if (nodo.getMovida().isElegida()) {
+			if (nodo.getMovida() != null && nodo.getMovida().isElegida()) {
 				dotLine += ",color=lightblue";
 			}
 

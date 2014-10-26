@@ -1,3 +1,4 @@
+package main;
 import java.io.FileNotFoundException;
 
 import minimax.MiniMaxByDepthGame;
