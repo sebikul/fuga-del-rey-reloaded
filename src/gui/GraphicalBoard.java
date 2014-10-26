@@ -168,11 +168,13 @@ public class GraphicalBoard {
 
 		frame.setVisible(true);
 
+		
+		// VER QUE PASA CON ESTO actualizarPantalla();
 		if (game.getCurrentGame().getTurno() == Jugador.ENEMIGO) {
 			ejecutarMovidaDeMaquina();
 		}
 
-		actualizarPantalla();
+		// ME PARECE QUE NO HACE FALTA ESTE ACTUALIZAR actualizarPantalla();
 
 	}
 
@@ -222,6 +224,8 @@ public class GraphicalBoard {
 			System.out.println(game.getCurrentGame());
 			System.exit(0);
 		}
+		
+		actualizarPantalla();
 
 	}
 

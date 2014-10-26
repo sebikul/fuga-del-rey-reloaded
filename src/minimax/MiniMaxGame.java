@@ -32,12 +32,14 @@ public abstract class MiniMaxGame {
 
 	public boolean ejecutarMovidaDeEnemigo() {
 		Movida movida = getMejorMovida();
+		
 		System.out.println("El valor magico de angie: " + movida.getValor());
 		
-
+		
 		Jugador result = null;
 		try {
 			result = currentState.getEstado().mover(movida);
+			System.out.println("LA MOVIDA A REALIZAR ES    --ORIGEN:" + movida.getOrigen() + "--DESTINO:" + movida.getDestino() );
 		} catch (MovimientoInvalidoException | BoardPointOutOfBoundsException
 				| MovimientoBloqueadoException e) {
 			e.printStackTrace();

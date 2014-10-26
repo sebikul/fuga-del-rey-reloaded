@@ -603,6 +603,7 @@ public class Game {
 				pos_enemigo = new Punto(fila, columna);
 
 				if (esOponente(pos_enemigo)) {
+					;
 
 					if (tablero[fila][columna] == Ficha.REY) {
 
@@ -612,24 +613,34 @@ public class Game {
 						for (int col_aux = columna - 1; col_aux <= columna + 1; col_aux++) {
 							for (int fil_aux = fila - 1; fil_aux <= fila + 1; fil_aux++) {
 
+								
+								
 								if (!((fil_aux != fila && col_aux != columna) || (fil_aux == fila && col_aux == columna))) {
 
 									pos_aliado = new Punto(fil_aux, col_aux);
 
-									if (esOponente(pos_aliado)
+									if (esAliado(pos_aliado)
 											|| !puntoEsValido(pos_aliado)) {
 										bloqueos++;
+										
 									}
 								}
 
 							}
 
 						}
+						
+						
 						/* El rey esta rodeado */
 						if (bloqueos == 4) {
+							System.out.println("El Rey esta bloqueado y se lo comieron");
 							tablero[fila][columna] = Ficha.REYMUERTO;
 							return Jugador.ENEMIGO;
 						}
+						
+						
+						
+
 
 					} else {
 						/*
@@ -654,9 +665,11 @@ public class Game {
 				}
 
 			}
-
+			
+			
 		}
 
+		
 		cambiarJugador();
 
 		return null;
