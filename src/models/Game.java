@@ -513,6 +513,8 @@ public class Game {
 		int cuadranteMenor = 0;
 		int matarAlRey = 0;
 
+		valor = valor * valor;
+
 		Punto rey = buscarAlRey();
 
 		if (rey == null) {
