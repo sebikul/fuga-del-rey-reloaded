@@ -37,7 +37,7 @@ public class Nodo implements Comparable<Nodo> {
 
 			for (Nodo hijo : nodo.hijos) {
 
-				Movida nuevaMovida = getMovidaPorProfundidad(hijo,
+				Movida nuevaMovida = hijo.getMovidaPorProfundidad(hijo,
 						profundidad - 1);
 
 				if (Math.abs(nuevaMovida.getValor()) == Integer.MAX_VALUE) {
@@ -77,7 +77,6 @@ public class Nodo implements Comparable<Nodo> {
 				for (Movida movida : nodo.estado.getPosiblesMovidas(new Punto(
 						fila, columna))) {
 
-					
 					Game game = nodo.estado.copiar();
 
 					try {
@@ -87,12 +86,10 @@ public class Nodo implements Comparable<Nodo> {
 						if (game.getTurno() == Jugador.GUARDIA) {
 							signo = -1;
 						}
-						
+
 						Jugador result = game.mover(movida);
 
-
-						
-						System.out.println(game.valorMagico());
+						//System.out.println(game.valorMagico());
 						movida.setValor(((result == null) ? game.valorMagico()
 								: Integer.MAX_VALUE) * signo);
 					} catch (MovimientoInvalidoException
