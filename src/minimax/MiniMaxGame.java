@@ -1,7 +1,9 @@
 package minimax;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import models.Game;
 import models.Jugador;
@@ -15,6 +17,7 @@ public abstract class MiniMaxGame {
 	protected Nodo currentState;
 	private boolean prune = false;
 	protected boolean saveTree = false;
+	private long i;
 
 	public MiniMaxGame(Game juegoInicial, boolean prune, boolean saveTree) {
 
@@ -57,37 +60,69 @@ public abstract class MiniMaxGame {
 
 	public void printGraphVizCode() {
 
-		System.out.println("digraph {");
+		try {
 
-		Queue<Nodo> queue = new LinkedList<Nodo>();
-		queue.add(currentState);
+			StringBuffer sbf = new StringBuffer();
 
-		long i = 0;
+			sbf.append("digraph minimax {\n");
 
-		while (!queue.isEmpty()) {
+			printGraphVizCode(currentState, i, sbf);
 
-			Nodo nodo = queue.poll();
+			sbf.append("\n}");
 
-			String dotLine = "" + i + "[label=\"" + nodo.getMovida() + "\"";
+			BufferedWriter bwr;
+			File treeFile = null;
+
+			treeFile = new File(System.getProperty("user.dir") + "/./"
+					+ "tree.dot");
+
+			bwr = new BufferedWriter(new FileWriter(treeFile));
+			bwr.write(sbf.toString());
+
+			// flush the stream
+			bwr.flush();
+
+			// close the stream
+			bwr.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+	}
+
+	public void printGraphVizCode(Nodo nodo, long idPadre, StringBuffer bwr)
+			throws IOException {
+
+		String dotLine;
+
+		if (i == 0) {
+
+			dotLine = "" + i + " [label=\"START\"]\n";
+
+		} else {
+
+			dotLine = "" + i + " [label=\"" + nodo.getMovida() + "\"";
+
+		}
+
+		long idActual = i;
+		i++;
+
+		if (idActual != 0) {
 
 			if (nodo.getEstado().getTurno() == Jugador.GUARDIA) {
 				dotLine += " shape=box";
 			}
 
-			dotLine += "]";
-
-			System.out.println(dotLine);
-
-			for (Nodo hijo : nodo.getHijos()) {
-
-				// System.out.println(hijo);
-				queue.add(hijo);
-
-			}
-
+			dotLine += "]\n" + idPadre + " -> " + idActual + "\n";
 		}
 
-		System.out.println("digraph }");
+		bwr.append(dotLine);
+
+		for (Nodo hijo : nodo.getHijos()) {
+			printGraphVizCode(hijo, idActual, bwr);
+		}
 
 	}
 
