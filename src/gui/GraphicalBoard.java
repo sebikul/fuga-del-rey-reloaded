@@ -49,6 +49,7 @@ public class GraphicalBoard {
 
 	/**
 	 * Create the application.
+	 * 
 	 * @wbp.parser.entryPoint
 	 */
 	private GraphicalBoard() {
@@ -95,12 +96,11 @@ public class GraphicalBoard {
 		frame = new JFrame();
 		table = new JTable();
 		mouseListener = new MouseListenerImpl();
-		
+
 		frame.setResizable(false);
 		frame.setBounds(100, 100, 550, 550);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		
+
 		table.setCellSelectionEnabled(true);
 		table.setRowSelectionAllowed(false);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -137,7 +137,7 @@ public class GraphicalBoard {
 
 		lblError = new JLabel("");
 		panel_3.add(lblError);
-		
+
 		lblGameOver = new JLabel("");
 		lblGameOver.setForeground(Color.RED);
 		panel_3.add(lblGameOver);
@@ -147,7 +147,6 @@ public class GraphicalBoard {
 
 		frame.setVisible(true);
 
-		
 		// VER QUE PASA CON ESTO actualizarPantalla();
 		if (game.getCurrentGame().getTurno() == Jugador.ENEMIGO) {
 			ejecutarMovidaDeMaquina();
@@ -156,8 +155,8 @@ public class GraphicalBoard {
 		actualizarPantalla();
 
 	}
-	
-	private class MouseListenerImpl implements MouseListener{
+
+	private class MouseListenerImpl implements MouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 
@@ -189,30 +188,29 @@ public class GraphicalBoard {
 		}
 
 		@Override
-		public void mouseEntered(MouseEvent arg0) {
+		public void mousePressed(MouseEvent e) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
-		public void mouseExited(MouseEvent arg0) {
+		public void mouseReleased(MouseEvent e) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
-		public void mousePressed(MouseEvent arg0) {
+		public void mouseEntered(MouseEvent e) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
 		@Override
-		public void mouseReleased(MouseEvent arg0) {
+		public void mouseExited(MouseEvent e) {
 			// TODO Auto-generated method stub
-			
+
 		}
 
-		
 	}
 
 	private void limpiarCoordenadas() {
@@ -254,28 +252,26 @@ public class GraphicalBoard {
 
 	private void ejecutarMovidaDeMaquina() {
 
-			
 		if (game.ejecutarMovidaDeEnemigo()) {
-			
+
 			gameOver(Jugador.ENEMIGO);
 		}
-		
 
 	}
-	
-	private void gameOver(Jugador jugador){
-		
-			System.out.println("El jugador " + jugador + " ha ganado");
-			if(jugador==Jugador.GUARDIA){
-				lblGameOver.setForeground(Color.BLUE);
-			}
-			lblGameOver.setText("EL JUGADOR " + jugador + " HA GANADO");
-						
+
+	private void gameOver(Jugador jugador) {
+
+		System.out.println("El jugador " + jugador + " ha ganado");
+		if (jugador == Jugador.GUARDIA) {
+			lblGameOver.setForeground(Color.BLUE);
+		}
+		lblGameOver.setText("EL JUGADOR " + jugador + " HA GANADO");
+
 		System.out.println(game.getCurrentGame());
-		table.setEnabled(false);
-			
+		System.exit(0);
+
 	}
-	
+
 	private void actualizarPantalla() {
 
 		((AbstractTableModel) table.getModel()).fireTableDataChanged();

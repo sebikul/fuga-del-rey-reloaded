@@ -19,13 +19,15 @@ public class MiniMaxTimedGame extends MiniMaxGame {
 	protected Movida getMejorMovida() {
 
 		long comienzo = System.currentTimeMillis();
-		long actual = 0;
+		long diff = 0;
 		Movida movida = null;
 		int prof = 1;
 
-		while (actual < time) {
+		while (diff < time) {
 			movida = currentState.getMovidaPorProfundidad(prof);
-			actual = System.currentTimeMillis() - comienzo;
+			diff = System.currentTimeMillis() - comienzo;
+			System.out.println("Tiempo tardado en profundidad " + prof + " = "
+					+ diff + "ms");
 			prof++;
 		}
 
