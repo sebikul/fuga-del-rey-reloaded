@@ -2,13 +2,14 @@ package models;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import exceptions.BoardPointOutOfBoundsException;
 import exceptions.MovimientoBloqueadoException;
 import exceptions.MovimientoInvalidoException;
 
-public class Game {
+public class Game implements Iterable<Punto> {
 
 	private int[] cantidadDeFichas = new int[] { 0, 0 };
 
@@ -109,12 +110,17 @@ public class Game {
 		return true;
 	}
 
-	public boolean esAliado(Punto point) {
+	public boolean esAliado(Punto punto) {
 
-		if (!puntoEsValido(point))
+		return esAliado(punto.getFila(), punto.getColumna());
+	}
+
+	public boolean esAliado(int fila, int columna) {
+
+		if (!puntoEsValido(fila, columna))
 			return false;
 
-		Ficha ficha = tablero[point.getFila()][point.getColumna()];
+		Ficha ficha = tablero[fila][columna];
 
 		if (ficha == Ficha.CASTILLO) {
 			return true;
@@ -130,12 +136,17 @@ public class Game {
 		return false;
 	}
 
-	public boolean esOponente(Punto point) {
+	public boolean esOponente(Punto punto) {
 
-		if (!puntoEsValido(point))
+		return esOponente(punto.getFila(), punto.getColumna());
+	}
+
+	public boolean esOponente(int fila, int columna) {
+
+		if (!puntoEsValido(fila, columna))
 			return false;
 
-		Ficha ficha = tablero[point.getFila()][point.getColumna()];
+		Ficha ficha = tablero[fila][columna];
 
 		if (ficha == Ficha.CASTILLO) {
 			return true;
@@ -150,6 +161,7 @@ public class Game {
 			return true;
 		}
 		return false;
+
 	}
 
 	public boolean esTableroLargo() {
@@ -159,10 +171,8 @@ public class Game {
 	public Ficha getFichaAt(int fila, int columna)
 			throws BoardPointOutOfBoundsException {
 
-		Punto punto = new Punto(fila, columna);
-
-		if (!puntoEsValido(punto)) {
-			throw new BoardPointOutOfBoundsException(punto);
+		if (!puntoEsValido(fila, columna)) {
+			throw new BoardPointOutOfBoundsException(fila, columna);
 		}
 
 		return tablero[fila][columna];
@@ -459,10 +469,15 @@ public class Game {
 
 	}
 
-	private boolean puntoEsValido(Punto point) {
+	private boolean puntoEsValido(Punto punto) {
 
-		return point.getFila() >= 0 && point.getFila() < size
-				&& point.getColumna() < size && point.getColumna() >= 0;
+		return puntoEsValido(punto.getFila(), punto.getColumna());
+
+	}
+
+	private boolean puntoEsValido(int fila, int columna) {
+
+		return fila >= 0 && fila < size && columna < size && columna >= 0;
 
 	}
 
@@ -513,7 +528,7 @@ public class Game {
 		int cuadranteMenor = 0;
 		int matarAlRey = 0;
 
-		valor = valor * valor;
+		// valor = valor * valor;
 
 		Punto rey = buscarAlRey();
 
@@ -528,12 +543,12 @@ public class Game {
 					continue;
 				}
 
-				if (puntoEsValido(new Punto(fila, columna))
+				if (puntoEsValido(fila, columna)
 						&& tablero[fila][columna] == Ficha.ENEMIGO) {
 					bloqueos++;
 				}
 
-				if (puntoEsValido(new Punto(fila, columna))
+				if (puntoEsValido(fila, columna)
 						&& tablero[fila][columna] == Ficha.ENEMIGO) {
 
 					if (cuadranteMenor(fila, columna, rey.getFila(),
@@ -552,13 +567,14 @@ public class Game {
 		}
 
 		// System.out.println("Valor: " + valor);
-		 //System.out.println("LA CANTIDAD DE BLOQUEOS ES: " + bloqueos);
-		 //System.out.println("LA CANTIDAD DE CUADRANTEMENOR ES: " + cuadranteMenor);
-		 //System.out.println("LA CANTIDAD DE MATARALREY ES: " + matarAlRey);
+		// System.out.println("LA CANTIDAD DE BLOQUEOS ES: " + bloqueos);
+		// System.out.println("LA CANTIDAD DE CUADRANTEMENOR ES: " +
+		// cuadranteMenor);
+		// System.out.println("LA CANTIDAD DE MATARALREY ES: " + matarAlRey);
 		int heuristica = valor + 2 * bloqueos + 3 * cuadranteMenor + 6
 				* matarAlRey;
 		// System.out.println("EL VALORCITO ES : " + heuristica );
-		return heuristica;
+		return Math.abs(heuristica);
 	}
 
 	/*
@@ -591,10 +607,6 @@ public class Game {
 	 */
 	private Jugador verificarBloqueos(Punto destino) {
 
-		// int j = 0;
-
-		Punto pos_aliado, pos_enemigo;
-
 		/* Itera sobre los puntos adyacentes */
 		for (int columna = destino.getColumna() - 1; columna <= destino
 				.getColumna() + 1; columna++) {
@@ -607,10 +619,7 @@ public class Game {
 					continue;
 				}
 
-				pos_enemigo = new Punto(fila, columna);
-
-				if (esOponente(pos_enemigo)) {
-					;
+				if (esOponente(fila, columna)) {
 
 					if (tablero[fila][columna] == Ficha.REY) {
 
@@ -624,14 +633,12 @@ public class Game {
 
 								if (!((fil_aux != fila && col_aux != columna) || (fil_aux == fila && col_aux == columna))) {
 
-									pos_aliado = new Punto(fil_aux, col_aux);
-
-									if (esAliado(pos_aliado)
-											|| !puntoEsValido(pos_aliado)) {
+									if (esAliado(fil_aux, col_aux)
+											|| !puntoEsValido(fil_aux, col_aux)) {
 										bloqueos++;
 										// System.out.println("Rey bloqueado por "+pos_aliado);
 
-									} else if (esOponente(pos_aliado)) {
+									} else if (esOponente(fil_aux, col_aux)) {
 										bloqueosPorGurdias++;
 									}
 								}
@@ -654,12 +661,10 @@ public class Game {
 						 * La ficha oponente no es el rey, veo si esta capturada
 						 */
 
-						pos_aliado = new Punto(destino.getFila()
-								+ (fila - destino.getFila()) * 2,
-								destino.getColumna()
-										+ (columna - destino.getColumna()) * 2);
-
-						if (esAliado(pos_aliado)) {
+						if (esAliado(
+								destino.getFila() + (fila - destino.getFila())
+										* 2, destino.getColumna()
+										+ (columna - destino.getColumna()) * 2)) {
 
 							cantidadDeFichas[tablero[fila][columna]
 									.getJugador().getIndice()]--;
@@ -685,6 +690,33 @@ public class Game {
 
 		cantidadDeFichas[Jugador.ENEMIGO.getIndice()] = enemigos;
 		cantidadDeFichas[Jugador.GUARDIA.getIndice()] = guardias;
+
+	}
+
+	@Override
+	public Iterator<Punto> iterator() {
+
+		return new Iterator<Punto>() {
+
+			@Override
+			public boolean hasNext() {
+				// TODO Auto-generated method stub
+				return false;
+			}
+
+			@Override
+			public Punto next() {
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			@Override
+			public void remove() {
+				// TODO Auto-generated method stub
+
+			}
+
+		};
 
 	}
 

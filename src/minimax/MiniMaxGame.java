@@ -87,13 +87,10 @@ public abstract class MiniMaxGame {
 			bwr = new BufferedWriter(new FileWriter(treeFile));
 			bwr.write(sbf.toString());
 
-			// flush the stream
 			bwr.flush();
 
-			// close the stream
 			bwr.close();
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 

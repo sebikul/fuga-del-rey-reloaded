@@ -11,6 +11,10 @@ public class BoardPointOutOfBoundsException extends Exception {
 		this.punto = punto;
 	}
 
+	public BoardPointOutOfBoundsException(int fila, int columna) {
+		this(new Punto(fila, columna));
+	}
+
 	public Punto getPunto() {
 		return punto;
 	}
