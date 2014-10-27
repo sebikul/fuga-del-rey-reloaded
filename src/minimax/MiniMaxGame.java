@@ -15,7 +15,7 @@ import exceptions.MovimientoInvalidoException;
 public abstract class MiniMaxGame {
 
 	protected Nodo currentState;
-	private boolean prune = false;
+	private boolean prune;
 	protected boolean saveTree = false;
 	private long i;
 
@@ -26,6 +26,14 @@ public abstract class MiniMaxGame {
 		this.prune = prune;
 		this.saveTree = saveTree;
 	}
+	
+	
+	
+	public boolean isPrune() {
+		return prune;
+	}
+
+
 
 	public Game getCurrentGame() {
 		return currentState.getEstado();

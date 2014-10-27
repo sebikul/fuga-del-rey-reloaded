@@ -24,7 +24,7 @@ public class MiniMaxTimedGame extends MiniMaxGame {
 		int prof = 1;
 
 		while (diff < time) {
-			movida = currentState.getMovidaPorProfundidad(prof);
+			movida = currentState.getMovidaPorProfundidad(prof, isPrune());
 			diff = System.currentTimeMillis() - comienzo;
 			System.out.println("Tiempo tardado en profundidad " + prof + " = "
 					+ diff + "ms");
