@@ -467,6 +467,14 @@ public class Game implements Iterable<Punto> {
 
 		}
 
+		for (int fila = 0; fila < size; fila++) {
+			for (int columna = 0; columna < size; columna++) {
+				if (tablero[fila][columna] == null) {
+					tablero[fila][columna] = Ficha.VACIO;
+				}
+			}
+		}
+
 	}
 
 	private boolean puntoEsValido(Punto punto) {
@@ -698,16 +706,52 @@ public class Game implements Iterable<Punto> {
 
 		return new Iterator<Punto>() {
 
+			private Ficha[][] tablero = Game.this.tablero;
+
+			private int fila = 0;
+			private int columna = 0;
+
 			@Override
 			public boolean hasNext() {
-				// TODO Auto-generated method stub
-				return false;
+
+				Ficha ficha;
+
+				if (fila == size) {
+					return false;
+				}
+
+				if (columna < size) {
+
+					ficha = tablero[fila][columna];
+
+					if ((turno == Jugador.ENEMIGO && ficha == Ficha.ENEMIGO)
+							|| (turno == Jugador.GUARDIA && (ficha == Ficha.GUARDIA || ficha == Ficha.REY))) {
+						return true;
+					} else {
+
+						columna++;
+						return hasNext();
+					}
+
+				} else {
+					columna = columna % size;
+					fila++;
+
+					return hasNext();
+
+				}
+
 			}
 
 			@Override
 			public Punto next() {
-				// TODO Auto-generated method stub
-				return null;
+
+				Punto punto = new Punto(fila, columna, tablero[fila][columna]);
+
+				columna++;
+
+				return punto;
+
 			}
 
 			@Override
@@ -719,5 +763,4 @@ public class Game implements Iterable<Punto> {
 		};
 
 	}
-
 }

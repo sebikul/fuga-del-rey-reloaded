@@ -51,81 +51,66 @@ public class Nodo implements Comparable<Nodo> {
 		Nodo mejorHijo = null;
 
 		// TODO iterator de fichas
-		for (int fila = 0; fila < nodo.estado.getSize(); fila++) {
-			for (int columna = 0; columna < nodo.estado.getSize(); columna++) {
+		for (Punto punto : nodo.estado) {
+
+			for (Movida movida : nodo.estado.getPosiblesMovidas(punto)) {
+
+				Game game = nodo.estado.copiar();
 
 				try {
 
-					Ficha ficha = nodo.estado.getFichaAt(fila, columna);
+					int signo = 1;
 
-					if ((nodo.estado.getTurno() == Jugador.ENEMIGO && ficha != Ficha.ENEMIGO)
-							|| (nodo.estado.getTurno() == Jugador.GUARDIA && (ficha != Ficha.GUARDIA && ficha != Ficha.REY))) {
-						continue;
-					}
-				} catch (BoardPointOutOfBoundsException e1) {
-					e1.printStackTrace();
-				}
-
-				for (Movida movida : nodo.estado.getPosiblesMovidas(new Punto(
-						fila, columna))) {
-					Game game = nodo.estado.copiar();
-
-					try {
-
-						int signo = 1;
-
-						if (game.getTurno() == Jugador.GUARDIA) {
-							signo = -1;
-						}
-
-						Jugador result = game.mover(movida);
-
-						Nodo hijo = new Nodo(game, movida);
-
-						if (result == null) {
-							hijo.valor = game.valorMagico();
-						} else if (result == nodo.estado.getTurno()) {
-							hijo.valor = Integer.MAX_VALUE * signo;
-							hijo.movida.setElegida(true);
-							return hijo;
-						}
-
-						if (profundidad > 1) {
-							hijo.valor = hijo.getMejorEnProfundidad(hijo,
-									profundidad - 1, valorPoda).valor;
-						}
-
-						if (mejorHijo == null) {
-							mejorHijo = hijo;
-						} else if ((game.getTurno() == Jugador.GUARDIA && mejorHijo.valor < hijo.valor)
-								|| (game.getTurno() == Jugador.ENEMIGO && mejorHijo.valor > hijo.valor)) {
-							mejorHijo = hijo;
-						}
-
-					} catch (MovimientoInvalidoException
-							| BoardPointOutOfBoundsException
-							| MovimientoBloqueadoException e) {
-						System.out.println("Nodo.getMovidaPorProfundidad()");
+					if (game.getTurno() == Jugador.GUARDIA) {
+						signo = -1;
 					}
 
-					// // valorPoda==null si est� deshabilitada la poda desde
-					// // argumentos.
-					// if (valorPoda != null
-					// && podar(valorPoda, nuevaMovida.getValor(), nodo
-					// .getEstado().getTurno())) {
-					//
-					// // es necesario porque despues recorre el
-					// // Collections.max con los nodos que quedaron.
-					// hijo.movida.setValor(nuevaMovida.getValor());
-					// break;
-					//
-					// } else {
-					// valorPoda = nuevaMovida.getValor();
-					// }
-					//
-					// hijo.movida.setValor(nuevaMovida.getValor());
+					Jugador result = game.mover(movida);
 
+					Nodo hijo = new Nodo(game, movida);
+
+					if (result == null) {
+						hijo.valor = game.valorMagico();
+					} else if (result == nodo.estado.getTurno()) {
+						hijo.valor = Integer.MAX_VALUE * signo;
+						hijo.movida.setElegida(true);
+						return hijo;
+					}
+
+					if (profundidad > 1) {
+						hijo.valor = hijo.getMejorEnProfundidad(hijo,
+								profundidad - 1, valorPoda).valor;
+					}
+
+					if (mejorHijo == null) {
+						mejorHijo = hijo;
+					} else if ((game.getTurno() == Jugador.GUARDIA && mejorHijo.valor < hijo.valor)
+							|| (game.getTurno() == Jugador.ENEMIGO && mejorHijo.valor > hijo.valor)) {
+						mejorHijo = hijo;
+					}
+
+				} catch (MovimientoInvalidoException
+						| BoardPointOutOfBoundsException
+						| MovimientoBloqueadoException e) {
+					System.out.println("Nodo.getMovidaPorProfundidad()");
 				}
+
+				// // valorPoda==null si est� deshabilitada la poda desde
+				// // argumentos.
+				// if (valorPoda != null
+				// && podar(valorPoda, nuevaMovida.getValor(), nodo
+				// .getEstado().getTurno())) {
+				//
+				// // es necesario porque despues recorre el
+				// // Collections.max con los nodos que quedaron.
+				// hijo.movida.setValor(nuevaMovida.getValor());
+				// break;
+				//
+				// } else {
+				// valorPoda = nuevaMovida.getValor();
+				// }
+				//
+				// hijo.movida.setValor(nuevaMovida.getValor());
 
 			}
 

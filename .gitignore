@@ -5,3 +5,4 @@
 tree.dot
 /build/
 output.png
+*.prefs
