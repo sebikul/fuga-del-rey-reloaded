@@ -57,13 +57,16 @@ public abstract class MiniMaxGame {
 		}
 
 		currentState = new Nodo(currentState.getEstado(), null, gvw);
-
-		try {
-			gvw.finalizeDotFile();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
+		if(gvw!=null){
+			try {
+				gvw.finalizeDotFile();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		
 
 		if (result != null) {
 			return true;

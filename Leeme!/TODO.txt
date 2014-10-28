@@ -10,3 +10,13 @@ con alguna ficha defensora en posición adyacente.
 - collections max. 
 
 - Arreglar profundidad +1
+
+-------------------
+
+2014.10.28
+
+- poda alfa beta
+- tira null pointer si no mandamos por parametro a -tree porque está inicializado gvw = null
+- mejorar la parte grafica que no se vaya cuando muere el rey, solucionar que el rey vaya para cualq lado cuando table.setEnable(false);
+- Aplicar el formato pedido en el tp para el .dot
+- ver que el visual VM no me muestra las instacias para Punto cuando ejecuto la version 1 del minimax. 
