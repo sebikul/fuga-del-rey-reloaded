@@ -656,6 +656,10 @@ public class Game {
 
 							tablero[fila][columna] = Ficha.VACIO;
 
+							if (cantidadDeFichas[Jugador.ENEMIGO.getIndice()]==0){
+								return Jugador.GUARDIA;
+							}
+							
 						}
 
 					}
@@ -690,7 +694,7 @@ public class Game {
 
 					private int fila = 0;
 					private int columna = 0;
-
+					
 					@Override
 					public boolean hasNext() {
 

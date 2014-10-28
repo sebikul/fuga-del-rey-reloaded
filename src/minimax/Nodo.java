@@ -152,6 +152,7 @@ public class Nodo {
 			gvw.addNode(nodo, mejorHijo,
 					nodo.estado.getTurno() == Jugador.GUARDIA);
 		}
+
 		return mejorHijo;
 
 	}
