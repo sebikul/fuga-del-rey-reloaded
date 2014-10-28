@@ -14,7 +14,6 @@ public class Nodo {
 
 	private Movida movida;
 	private int valor;
-	
 
 	public int getValor() {
 		return valor;
@@ -28,31 +27,31 @@ public class Nodo {
 		this.gvw = gvw;
 	}
 
-	public Movida getMovidaPorProfundidad(int profundidad, boolean prune) {
+	public Movida getMovidaPorProfundidad(int profundidad, boolean prune,
+			long maxTime) {
 		Integer alfa, beta;
+
 		int signo = -1;
 		if (!prune) {
-			
+
 			alfa = null;
 			beta = null;
-		}else{
-			alfa = signo*Integer.MAX_VALUE;
+		} else {
+			alfa = signo * Integer.MAX_VALUE;
 			beta = Integer.MAX_VALUE;
 		}
-			
 
 		if (gvw != null) {
 			gvw.addNode(null, this, this.estado.getTurno() == Jugador.GUARDIA);
 		}
 
-		return getMejorEnProfundidad(this, profundidad, alfa, beta).movida;
+		return getMejorEnProfundidad(this, profundidad, alfa, beta, maxTime).movida;
+
 	}
 
-	
 	private Nodo getMejorEnProfundidad(Nodo nodo, int profundidad,
-			Integer alfa, Integer beta) {
-		
-		
+			Integer alfa, Integer beta, long maxTime) {
+
 		boolean podar = false;
 
 		Nodo mejorHijo = null;
@@ -61,12 +60,15 @@ public class Nodo {
 
 			for (Movida movida : nodo.estado.getPosiblesMovidas(punto)) {
 
-				//Si en la evaluación de la anterior movida se determinó una poda, se setan las siguientes movidas como podadas para luego incluirlas al árbol.
-				if(podar){
+				// Si en la evaluaciï¿½n de la anterior movida se determinï¿½
+				// una
+				// poda, se setan las siguientes movidas como podadas para luego
+				// incluirlas al ï¿½rbol.
+				if (podar) {
 					movida.setPodada(true);
 					continue;
 				}
-				
+
 				Game game = nodo.estado.copiar();
 
 				try {
@@ -95,31 +97,25 @@ public class Nodo {
 					}
 
 					if (profundidad > 1) {
-						
-					
-						
+
 						hijo.valor = hijo.getMejorEnProfundidad(hijo,
-								profundidad - 1, alfa, beta).valor;
-						
-						if(alfa!=null&&beta!=null){
-							if(estado.getTurno()== Jugador.ENEMIGO){
+								profundidad - 1, alfa, beta, maxTime).valor;
+
+						if (alfa != null && beta != null) {
+							if (estado.getTurno() == Jugador.ENEMIGO) {
 								alfa = hijo.valor;
-								if(alfa>=beta)
+								if (alfa >= beta)
 									podar = true;
-								
-							}else{
+
+							} else {
 								beta = hijo.valor;
-								if(beta<=alfa)
+								if (beta <= alfa)
 									podar = true;
-							}	
+							}
 						}
-						
-													
+
 					}
-					
-					
-					
-					
+
 					if (mejorHijo == null) {
 						mejorHijo = hijo;
 					} else if ((game.getTurno() == Jugador.GUARDIA && mejorHijo.valor < hijo.valor)
@@ -134,23 +130,19 @@ public class Nodo {
 
 						}
 					}
-				
-					
-					if(alfa!=null&&beta!=null && profundidad ==1){
-						if(estado.getTurno()== Jugador.ENEMIGO){
+
+					if (alfa != null && beta != null && profundidad == 1) {
+						if (estado.getTurno() == Jugador.ENEMIGO) {
 							alfa = hijo.valor;
-							if(alfa>=beta)
+							if (alfa >= beta)
 								podar = true;
-							
-						}else{
+
+						} else {
 							beta = hijo.valor;
-							if(beta<=alfa)
+							if (beta <= alfa)
 								podar = true;
-						}	
+						}
 					}
-					
-								
-					
 
 				} catch (MovimientoInvalidoException
 						| BoardPointOutOfBoundsException
@@ -158,12 +150,17 @@ public class Nodo {
 					System.out.println("Nodo.getMovidaPorProfundidad()");
 				}
 
-				
+			}
+
+			if (maxTime != 0 && System.currentTimeMillis() > maxTime) {
+				// System.out.println("Cortando por limite de tiempo");
+				// System.out.println("Nos pasamos "
+				// + (System.currentTimeMillis() - maxTime));
+				return new Nodo(null, null, null);
 			}
 
 		}
 
-		
 		mejorHijo.movida.setElegida(true);
 
 		if (gvw != null) {
@@ -176,7 +173,6 @@ public class Nodo {
 
 	}
 
-	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
