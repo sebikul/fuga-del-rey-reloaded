@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
@@ -24,9 +25,6 @@ import models.Ficha;
 import models.Game;
 import models.Jugador;
 import models.Punto;
-
-import org.eclipse.wb.swing.FocusTraversalOnArray;
-
 import exceptions.BoardPointOutOfBoundsException;
 import exceptions.MovimientoBloqueadoException;
 import exceptions.MovimientoInvalidoException;
@@ -127,9 +125,6 @@ public class GraphicalBoard {
 
 		lblJugador = new JLabel("JUGADOR");
 		panel_2.add(lblJugador);
-
-		panel.setFocusTraversalPolicy(new FocusTraversalOnArray(
-				new Component[] { lblTurnoDe }));
 
 		panel_3 = new JPanel();
 		panel.add(panel_3);
@@ -243,9 +238,17 @@ public class GraphicalBoard {
 
 		actualizarPantalla();
 
-		ejecutarMovidaDeMaquina();
+		SwingUtilities.invokeLater(new Runnable() {
 
-		actualizarPantalla();
+			@Override
+			public void run() {
+				ejecutarMovidaDeMaquina();
+
+				actualizarPantalla();
+
+			}
+
+		});
 
 	}
 
