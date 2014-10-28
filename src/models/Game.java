@@ -1,7 +1,6 @@
 package models;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -54,17 +53,11 @@ public class Game {
 
 	}
 
-	/*
-	 * * Cambia de jugador en la estructura _*juego
-	 */
 	private void cambiarJugador() {
 
 		if (turno == Jugador.GUARDIA) {
-
 			turno = Jugador.ENEMIGO;
-
 		} else if (turno == Jugador.ENEMIGO) {
-
 			turno = Jugador.GUARDIA;
 		}
 
@@ -88,24 +81,6 @@ public class Game {
 				.getIndice()];
 
 		return tmpgame;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Game other = (Game) obj;
-		if (size != other.size)
-			return false;
-		if (!Arrays.deepEquals(tablero, other.tablero))
-			return false;
-		if (turno != other.turno)
-			return false;
-		return true;
 	}
 
 	public boolean esAliado(Punto punto) {
@@ -183,54 +158,32 @@ public class Game {
 
 		int fila, columna;
 
-		Ficha ficha;
-
 		// abajo
-		for (columna = origen.getColumna(), fila = origen.getFila() + 1; fila < size; fila++) {
-
-			ficha = tablero[fila][columna];
-
-			if (ficha != Ficha.VACIO) {
-				break;
-			}
+		for (columna = origen.getColumna(), fila = origen.getFila() + 1; fila < size
+				&& tablero[fila][columna] == Ficha.VACIO; fila++) {
 
 			lista.add(new Movida(origen, new Punto(fila, columna)));
 
 		}
 
 		// arriba
-		for (columna = origen.getColumna(), fila = origen.getFila() - 1; fila >= 0; fila--) {
-
-			ficha = tablero[fila][columna];
-
-			if (ficha != Ficha.VACIO) {
-				break;
-			}
+		for (columna = origen.getColumna(), fila = origen.getFila() - 1; fila >= 0
+				&& tablero[fila][columna] == Ficha.VACIO; fila--) {
 
 			lista.add(new Movida(origen, new Punto(fila, columna)));
 
 		}
 
 		// derecha
-		for (fila = origen.getFila(), columna = origen.getColumna() + 1; columna < size; columna++) {
-
-			ficha = tablero[fila][columna];
-
-			if (ficha != Ficha.VACIO) {
-				break;
-			}
+		for (fila = origen.getFila(), columna = origen.getColumna() + 1; columna < size
+				&& tablero[fila][columna] == Ficha.VACIO; columna++) {
 
 			lista.add(new Movida(origen, new Punto(fila, columna)));
 		}
 
 		// izquierda
-		for (fila = origen.getFila(), columna = origen.getColumna() - 1; columna >= 0; columna--) {
-
-			ficha = tablero[fila][columna];
-
-			if (ficha != Ficha.VACIO) {
-				break;
-			}
+		for (fila = origen.getFila(), columna = origen.getColumna() - 1; columna >= 0
+				&& tablero[fila][columna] == Ficha.VACIO; columna--) {
 
 			lista.add(new Movida(origen, new Punto(fila, columna)));
 		}
@@ -252,24 +205,6 @@ public class Game {
 
 	public Jugador getTurno() {
 		return turno;
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int medio = (size - 1) / 2;
-
-		int result = 1;
-		result = prime * result + Arrays.hashCode(tablero[0]);
-
-		result = prime * result + Arrays.hashCode(tablero[medio - 1]);
-		result = prime * result + Arrays.hashCode(tablero[medio]);
-		result = prime * result + Arrays.hashCode(tablero[medio + 1]);
-
-		result = prime * result + Arrays.hashCode(tablero[size - 1]);
-
-		result = prime * result + ((turno == null) ? 0 : turno.hashCode());
-		return result;
 	}
 
 	public Jugador mover(Movida movida) throws MovimientoInvalidoException,
@@ -306,31 +241,28 @@ public class Game {
 
 		/* Verifica si el destino es un castillo y la ficha no es el rey */
 		if (ficha != Ficha.REY
-				&& (destino.equals(new Punto(0, 0))
-						|| destino.equals(new Punto(0, size - 1))
-						|| destino.equals(new Punto(size - 1, 0)) || destino
-							.equals(new Punto(size - 1, size - 1)))) {
+				&& (destino.equals(0, 0) || destino.equals(0, size - 1)
+						|| destino.equals(size - 1, 0) || destino.equals(
+						size - 1, size - 1))) {
 			throw new MovimientoInvalidoException(origen, destino);
 
 		}
 
 		/* Verifica si el destino es un castillo y la ficha es el rey */
 		if (ficha == Ficha.REY
-				&& (destino.equals(new Punto(0, 0))
-						|| destino.equals(new Punto(0, size - 1))
-						|| destino.equals(new Punto(size - 1, 0)) || destino
-							.equals(new Punto(size - 1, size - 1)))) {
+				&& (destino.equals(0, 0) || destino.equals(0, size - 1)
+						|| destino.equals(size - 1, 0) || destino.equals(
+						size - 1, size - 1))) {
 			return Jugador.GUARDIA;
 		}
 
 		/* Chequea que no pueda ir una ficha que no sea el rey al trono */
-		if (ficha != Ficha.REY && destino.equals(new Punto(medio, medio))) {
+		if (ficha != Ficha.REY && destino.equals(medio, medio)) {
 			throw new MovimientoInvalidoException(origen, destino);
 		}
 
 		/* La ficha no se puede quedar en el mismo lugar */
-		if (origen.getFila() == destino.getFila()
-				&& origen.getColumna() == destino.getColumna()) {
+		if (origen.equals(destino)) {
 			throw new MovimientoInvalidoException(origen, destino);
 		}
 
@@ -344,7 +276,7 @@ public class Game {
 					: columna >= destino.getColumna(); columna += origen
 					.getColumna() < destino.getColumna() ? 1 : -1) {
 
-				if (!origen.equals(new Punto(fila, columna))) {
+				if (!origen.equals(fila, columna)) {
 					/*
 					 * Verifica si el camino esta bloqueado por otra ficha o si
 					 * es el tablero largo y no se es el enemigo
@@ -377,7 +309,7 @@ public class Game {
 
 		}
 
-		if (origen.getFila() == medio && origen.getColumna() == medio) {
+		if (origen.equals(medio, medio)) {
 			tablero[origen.getFila()][origen.getColumna()] = Ficha.TRONO;
 		} else {
 			tablero[origen.getFila()][origen.getColumna()] = Ficha.VACIO;
@@ -656,10 +588,10 @@ public class Game {
 
 							tablero[fila][columna] = Ficha.VACIO;
 
-							if (cantidadDeFichas[Jugador.ENEMIGO.getIndice()]==0){
+							if (cantidadDeFichas[Jugador.ENEMIGO.getIndice()] == 0) {
 								return Jugador.GUARDIA;
 							}
-							
+
 						}
 
 					}
@@ -694,7 +626,7 @@ public class Game {
 
 					private int fila = 0;
 					private int columna = 0;
-					
+
 					@Override
 					public boolean hasNext() {
 
@@ -798,7 +730,6 @@ public class Game {
 
 					@Override
 					public void remove() {
-						
 
 					}
 

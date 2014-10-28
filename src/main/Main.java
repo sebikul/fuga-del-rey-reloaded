@@ -97,6 +97,7 @@ public class Main {
 
 		if (isVisual) {
 
+			@SuppressWarnings("unused")
 			GraphicalBoard gui;
 
 			if (saveTree) {

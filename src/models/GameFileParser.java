@@ -25,7 +25,7 @@ public class GameFileParser {
 			try {
 				fileReader.close();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
+
 				e1.printStackTrace();
 			}
 			return null;
@@ -72,13 +72,13 @@ public class GameFileParser {
 
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+
 			e.printStackTrace();
 		} finally {
 			try {
 				fileReader.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+
 				e.printStackTrace();
 			}
 		}

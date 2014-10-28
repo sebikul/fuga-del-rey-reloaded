@@ -18,20 +18,8 @@ public class Punto {
 		this.ficha = ficha;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Punto other = (Punto) obj;
-		if (fila != other.fila)
-			return false;
-		if (columna != other.columna)
-			return false;
-		return true;
+	public boolean equals(int fila, int columna) {
+		return fila == this.fila && columna == this.columna;
 	}
 
 	public int getColumna() {
@@ -49,6 +37,10 @@ public class Punto {
 
 	public Ficha getFicha() {
 		return ficha;
+	}
+
+	public boolean equals(Punto punto) {
+		return equals(punto.fila, punto.columna);
 	}
 
 }
