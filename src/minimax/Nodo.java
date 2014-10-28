@@ -14,6 +14,7 @@ public class Nodo {
 
 	private Movida movida;
 	private int valor;
+	
 
 	public int getValor() {
 		return valor;
@@ -31,7 +32,7 @@ public class Nodo {
 		Integer valorPoda;
 		int signo = -1;
 		if (!prune) {
-			// Poda deshabilitada desde argumentos de ejecuciï¿½n.
+			// Poda deshabilitada desde argumentos de ejecucion.
 			valorPoda = null;
 		} else if (estado.getTurno() == Jugador.ENEMIGO) {
 			// Si soy MAX nunca va a cortar la primera rama porque
@@ -50,11 +51,12 @@ public class Nodo {
 		return getMejorEnProfundidad(this, profundidad, valorPoda).movida;
 	}
 
-	// Uso valor de poda
+	
 	private Nodo getMejorEnProfundidad(Nodo nodo, int profundidad,
 			Integer valorPoda) {
-
-		// boolean podar = false;
+		
+		System.out.println("VALOR PODA: " + valorPoda);
+		boolean podar = false;
 
 		Nodo mejorHijo = null;
 
@@ -62,6 +64,13 @@ public class Nodo {
 
 			for (Movida movida : nodo.estado.getPosiblesMovidas(punto)) {
 
+				//Si en la evaluación de la anterior movida se determinó una poda, se setan las siguientes movidas como podadas para luego incluirlas al árbol.
+				if(podar){
+					movida.setPodada(true);
+					System.out.println("Podada!");
+					continue;
+				}
+				
 				Game game = nodo.estado.copiar();
 
 				try {
@@ -90,10 +99,38 @@ public class Nodo {
 					}
 
 					if (profundidad > 1) {
+						
+						/**
+						 * DUDAA: Si valor poda es inifinito en abs, y soy MIN, multiplico por signo??
+						 */
+						
+						if(valorPoda!=null){
+							if(estado.getTurno()==Jugador.GUARDIA && Math.abs(valorPoda)==Integer.MAX_VALUE){
+								if(valorPoda>0)
+									valorPoda *=-1;
+							}else if(Math.abs(valorPoda)==Integer.MAX_VALUE){
+								if(valorPoda<0)
+									valorPoda *=-1;
+							}
+						}
+						
+						
+						
 						hijo.valor = hijo.getMejorEnProfundidad(hijo,
 								profundidad - 1, valorPoda).valor;
+					
+						
+						if(valorPoda!=null && podar(valorPoda, hijo.valor, estado.getTurno())){
+							podar=true;
+						}else if (valorPoda!=null){
+							valorPoda=hijo.valor;
+						}
+													
 					}
-
+					
+					
+					
+					
 					if (mejorHijo == null) {
 						mejorHijo = hijo;
 					} else if ((game.getTurno() == Jugador.GUARDIA && mejorHijo.valor < hijo.valor)
@@ -108,6 +145,15 @@ public class Nodo {
 
 						}
 					}
+				
+					
+					if(valorPoda!=null && valorPoda != Math.abs(Integer.MAX_VALUE)){
+						podar= podar(valorPoda, hijo.valor, estado.getTurno());						
+						
+					}
+					
+					
+					
 
 				} catch (MovimientoInvalidoException
 						| BoardPointOutOfBoundsException
@@ -115,36 +161,12 @@ public class Nodo {
 					System.out.println("Nodo.getMovidaPorProfundidad()");
 				}
 
-				// // valorPoda==null si estï¿½ deshabilitada la poda desde
-				// // argumentos.
-				// if (valorPoda != null
-				// && podar(valorPoda, nuevaMovida.getValor(), nodo
-				// .getEstado().getTurno())) {
-				//
-				// // es necesario porque despues recorre el
-				// // Collections.max con los nodos que quedaron.
-				// hijo.movida.setValor(nuevaMovida.getValor());
-				// break;
-				//
-				// } else {
-				// valorPoda = nuevaMovida.getValor();
-				// }
-				//
-				// hijo.movida.setValor(nuevaMovida.getValor());
-
+				
 			}
 
 		}
 
-		// Hay nodos a los cuales no se les pisï¿½ el valor heurï¿½stico en la
-		// movida, pero fueron creados porque se lo hace al principio (caso nodo
-		// C del ejemplo), habria que
-		// eliminarlos ademï¿½s de hacer un break en el for no? Sino cuando
-		// obtenga el min o el max voy a comparar contra cualquier cosa. Tendrï¿½a
-		// que eliminar los proximos con iterator.
-		// VER ACA CASO DE PODA DEL NODO F DEL EJEMPLO!! cuando estoy a
-		// profundidad 1, no estoy teniendo en cuenta la poda sino.
-
+		
 		mejorHijo.movida.setElegida(true);
 
 		if (gvw != null) {

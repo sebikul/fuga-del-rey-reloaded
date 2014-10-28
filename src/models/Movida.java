@@ -5,6 +5,7 @@ public class Movida {
 	private final Punto destino;
 
 	private boolean elegida = false;
+	private boolean podada = false;
 
 	private final Punto origen;
 
@@ -34,9 +35,19 @@ public class Movida {
 	// return false;
 	// return true;
 	// }
+	
+	
 
 	public Punto getDestino() {
 		return destino;
+	}
+
+	public boolean isPodada() {
+		return podada;
+	}
+
+	public void setPodada(boolean podada) {
+		this.podada = podada;
 	}
 
 	public Punto getOrigen() {

@@ -270,6 +270,8 @@ public class GraphicalBoard {
 		lblGameOver.setText("EL JUGADOR " + jugador + " HA GANADO");
 
 		System.out.println(game.getCurrentGame());
+		
+		//table.setEnabled(false);
 		System.exit(0);
 
 	}
