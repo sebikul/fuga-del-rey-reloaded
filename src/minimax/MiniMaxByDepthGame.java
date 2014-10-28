@@ -17,7 +17,8 @@ public class MiniMaxByDepthGame extends MiniMaxGame {
 	@Override
 	public Movida getMejorMovida() {
 
-		Movida movida = currentState.getMovidaPorProfundidad(depth, isPrune());
+		Movida movida = currentState.getMovidaPorProfundidad(depth, isPrune(),
+				0);
 
 		return movida;
 

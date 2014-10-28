@@ -14,7 +14,6 @@ public class Nodo {
 
 	private Movida movida;
 	private int valor;
-	
 
 	public int getValor() {
 		return valor;
@@ -28,7 +27,8 @@ public class Nodo {
 		this.gvw = gvw;
 	}
 
-	public Movida getMovidaPorProfundidad(int profundidad, boolean prune) {
+	public Movida getMovidaPorProfundidad(int profundidad, boolean prune,
+			long maxTime) {
 		Integer valorPoda;
 		int signo = -1;
 		if (!prune) {
@@ -48,14 +48,13 @@ public class Nodo {
 			gvw.addNode(null, this, this.estado.getTurno() == Jugador.GUARDIA);
 		}
 
-		return getMejorEnProfundidad(this, profundidad, valorPoda).movida;
+		return getMejorEnProfundidad(this, profundidad, valorPoda, maxTime).movida;
 	}
 
-	
 	private Nodo getMejorEnProfundidad(Nodo nodo, int profundidad,
-			Integer valorPoda) {
-		
-		System.out.println("VALOR PODA: " + valorPoda);
+			Integer valorPoda, long maxTime) {
+
+		// System.out.println("VALOR PODA: " + valorPoda);
 		boolean podar = false;
 
 		Nodo mejorHijo = null;
@@ -64,13 +63,15 @@ public class Nodo {
 
 			for (Movida movida : nodo.estado.getPosiblesMovidas(punto)) {
 
-				//Si en la evaluación de la anterior movida se determinó una poda, se setan las siguientes movidas como podadas para luego incluirlas al árbol.
-				if(podar){
+				// Si en la evaluaciï¿½n de la anterior movida se determinï¿½ una
+				// poda, se setan las siguientes movidas como podadas para luego
+				// incluirlas al ï¿½rbol.
+				if (podar) {
 					movida.setPodada(true);
 					System.out.println("Podada!");
 					continue;
 				}
-				
+
 				Game game = nodo.estado.copiar();
 
 				try {
@@ -99,38 +100,36 @@ public class Nodo {
 					}
 
 					if (profundidad > 1) {
-						
+
 						/**
-						 * DUDAA: Si valor poda es inifinito en abs, y soy MIN, multiplico por signo??
+						 * DUDAA: Si valor poda es inifinito en abs, y soy MIN,
+						 * multiplico por signo??
 						 */
-						
-						if(valorPoda!=null){
-							if(estado.getTurno()==Jugador.GUARDIA && Math.abs(valorPoda)==Integer.MAX_VALUE){
-								if(valorPoda>0)
-									valorPoda *=-1;
-							}else if(Math.abs(valorPoda)==Integer.MAX_VALUE){
-								if(valorPoda<0)
-									valorPoda *=-1;
+
+						if (valorPoda != null) {
+							if (estado.getTurno() == Jugador.GUARDIA
+									&& Math.abs(valorPoda) == Integer.MAX_VALUE) {
+								if (valorPoda > 0)
+									valorPoda *= -1;
+							} else if (Math.abs(valorPoda) == Integer.MAX_VALUE) {
+								if (valorPoda < 0)
+									valorPoda *= -1;
 							}
 						}
-						
-						
-						
+
 						hijo.valor = hijo.getMejorEnProfundidad(hijo,
-								profundidad - 1, valorPoda).valor;
-					
-						
-						if(valorPoda!=null && podar(valorPoda, hijo.valor, estado.getTurno())){
-							podar=true;
-						}else if (valorPoda!=null){
-							valorPoda=hijo.valor;
+								profundidad - 1, valorPoda, maxTime).valor;
+
+						if (valorPoda != null
+								&& podar(valorPoda, hijo.valor,
+										estado.getTurno())) {
+							podar = true;
+						} else if (valorPoda != null) {
+							valorPoda = hijo.valor;
 						}
-													
+
 					}
-					
-					
-					
-					
+
 					if (mejorHijo == null) {
 						mejorHijo = hijo;
 					} else if ((game.getTurno() == Jugador.GUARDIA && mejorHijo.valor < hijo.valor)
@@ -145,15 +144,12 @@ public class Nodo {
 
 						}
 					}
-				
-					
-					if(valorPoda!=null && valorPoda != Math.abs(Integer.MAX_VALUE)){
-						podar= podar(valorPoda, hijo.valor, estado.getTurno());						
-						
+
+					if (valorPoda != null
+							&& valorPoda != Math.abs(Integer.MAX_VALUE)) {
+						podar = podar(valorPoda, hijo.valor, estado.getTurno());
+
 					}
-					
-					
-					
 
 				} catch (MovimientoInvalidoException
 						| BoardPointOutOfBoundsException
@@ -161,12 +157,17 @@ public class Nodo {
 					System.out.println("Nodo.getMovidaPorProfundidad()");
 				}
 
-				
+			}
+
+			if (maxTime != 0 && System.currentTimeMillis() > maxTime) {
+			//	System.out.println("Cortando por limite de tiempo");
+			//	System.out.println("Nos pasamos "
+			//			+ (System.currentTimeMillis() - maxTime));
+				return new Nodo(null, null, null);
 			}
 
 		}
 
-		
 		mejorHijo.movida.setElegida(true);
 
 		if (gvw != null) {

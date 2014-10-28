@@ -5,13 +5,13 @@ import models.Movida;
 
 public class MiniMaxTimedGame extends MiniMaxGame {
 
-	private int time;
+	private long maxTime;
 
 	public MiniMaxTimedGame(Game juegoInicial, boolean prune, boolean saveTree,
 			int time) {
 		super(juegoInicial, prune, saveTree);
 
-		this.time = time * 1000;
+		this.maxTime = time * 1000 + System.currentTimeMillis();
 
 	}
 
@@ -19,21 +19,32 @@ public class MiniMaxTimedGame extends MiniMaxGame {
 	public Movida getMejorMovida() {
 
 		long comienzo = System.currentTimeMillis();
-		long diff = 0;
 		Movida movida = null;
+		Movida ultimaMovida = null;
 		int prof = 1;
 
-		while (diff < time) {
-			movida = currentState.getMovidaPorProfundidad(prof, isPrune());
-			diff = System.currentTimeMillis() - comienzo;
-			System.out.println("Tiempo tardado en profundidad " + prof + " = "
-					+ diff + "ms");
-			prof++;
+		while (System.currentTimeMillis() < maxTime) {
+			movida = currentState.getMovidaPorProfundidad(prof, isPrune(),
+					maxTime);
+
+			if (movida != null) {
+				ultimaMovida = movida;
+
+				// diff = System.currentTimeMillis() - comienzo;
+				System.out.println("Tiempo tardado en profundidad " + prof
+						+ " = " + (System.currentTimeMillis() - comienzo)
+						+ "ms");
+				prof++;
+
+			} else {
+				System.out.println("Cortamos en profundidad " + prof);
+			}
+
 		}
 
-		assert movida != null;
+		assert ultimaMovida != null;
 
-		return movida;
+		return ultimaMovida;
 
 	}
 
