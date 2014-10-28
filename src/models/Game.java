@@ -294,7 +294,7 @@ public class Game {
 					}
 
 					/*
-					 * Verifica que el tablero se a largo y los guardias no
+					 * Verifica que el tablero sea largo y los guardias no
 					 * puedan pasar por el trono
 					 */
 					if (esTableroLargo() && tmpFicha == Ficha.TRONO
@@ -532,9 +532,7 @@ public class Game {
 			for (int fila = destino.getFila() - 1; fila <= destino.getFila() + 1; fila++) {
 
 				if ((fila != destino.getFila() && columna != destino
-						.getColumna())
-						|| (fila == destino.getFila() && columna == destino
-								.getColumna())) {
+						.getColumna()) || destino.equals(fila, columna)) {
 					continue;
 				}
 
@@ -547,17 +545,16 @@ public class Game {
 						int bloqueosPorGurdias = 0;
 
 						/* Verifica que el rey este rodeado por 4 aliados */
-						for (int col_aux = columna - 1; col_aux <= columna + 1; col_aux++) {
-							for (int fil_aux = fila - 1; fil_aux <= fila + 1; fil_aux++) {
+						for (int tmpCol = columna - 1; tmpCol <= columna + 1; tmpCol++) {
+							for (int tmpFil = fila - 1; tmpFil <= fila + 1; tmpFil++) {
 
-								if (!((fil_aux != fila && col_aux != columna) || (fil_aux == fila && col_aux == columna))) {
+								if (!((tmpFil != fila && tmpCol != columna) || (tmpFil == fila && tmpCol == columna))) {
 
-									if (esAliado(fil_aux, col_aux)
-											|| !puntoEsValido(fil_aux, col_aux)) {
+									if (esAliado(tmpFil, tmpCol)
+											|| !puntoEsValido(tmpFil, tmpCol)) {
 										bloqueos++;
-										// System.out.println("Rey bloqueado por "+pos_aliado);
 
-									} else if (esOponente(fil_aux, col_aux)) {
+									} else if (esOponente(tmpFil, tmpCol)) {
 										bloqueosPorGurdias++;
 									}
 								}
