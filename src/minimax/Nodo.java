@@ -29,33 +29,30 @@ public class Nodo {
 	}
 
 	public Movida getMovidaPorProfundidad(int profundidad, boolean prune) {
-		Integer valorPoda;
+		Integer alfa, beta;
 		int signo = -1;
 		if (!prune) {
-			// Poda deshabilitada desde argumentos de ejecucion.
-			valorPoda = null;
-		} else if (estado.getTurno() == Jugador.ENEMIGO) {
-			// Si soy MAX nunca va a cortar la primera rama porque
-			// Alfa<+Infinito, por mï¿½s grande que sea.
-			valorPoda = Integer.MAX_VALUE;
-		} else {
-			// Si soy MIN nunca va a cortar la primera rama porque
-			// Beta>-Infinito, por mï¿½s chico que sea.
-			valorPoda = signo * Integer.MAX_VALUE;
+			
+			alfa = null;
+			beta = null;
+		}else{
+			alfa = signo*Integer.MAX_VALUE;
+			beta = Integer.MAX_VALUE;
 		}
+			
 
 		if (gvw != null) {
 			gvw.addNode(null, this, this.estado.getTurno() == Jugador.GUARDIA);
 		}
 
-		return getMejorEnProfundidad(this, profundidad, valorPoda).movida;
+		return getMejorEnProfundidad(this, profundidad, alfa, beta).movida;
 	}
 
 	
 	private Nodo getMejorEnProfundidad(Nodo nodo, int profundidad,
-			Integer valorPoda) {
+			Integer alfa, Integer beta) {
 		
-		System.out.println("VALOR PODA: " + valorPoda);
+		
 		boolean podar = false;
 
 		Nodo mejorHijo = null;
@@ -67,7 +64,6 @@ public class Nodo {
 				//Si en la evaluación de la anterior movida se determinó una poda, se setan las siguientes movidas como podadas para luego incluirlas al árbol.
 				if(podar){
 					movida.setPodada(true);
-					System.out.println("Podada!");
 					continue;
 				}
 				
@@ -100,31 +96,24 @@ public class Nodo {
 
 					if (profundidad > 1) {
 						
-						/**
-						 * DUDAA: Si valor poda es inifinito en abs, y soy MIN, multiplico por signo??
-						 */
-						
-						if(valorPoda!=null){
-							if(estado.getTurno()==Jugador.GUARDIA && Math.abs(valorPoda)==Integer.MAX_VALUE){
-								if(valorPoda>0)
-									valorPoda *=-1;
-							}else if(Math.abs(valorPoda)==Integer.MAX_VALUE){
-								if(valorPoda<0)
-									valorPoda *=-1;
-							}
-						}
-						
-						
-						
-						hijo.valor = hijo.getMejorEnProfundidad(hijo,
-								profundidad - 1, valorPoda).valor;
 					
 						
-						if(valorPoda!=null && podar(valorPoda, hijo.valor, estado.getTurno())){
-							podar=true;
-						}else if (valorPoda!=null){
-							valorPoda=hijo.valor;
+						hijo.valor = hijo.getMejorEnProfundidad(hijo,
+								profundidad - 1, alfa, beta).valor;
+						
+						if(alfa!=null&&beta!=null){
+							if(estado.getTurno()== Jugador.ENEMIGO){
+								alfa = hijo.valor;
+								if(alfa>=beta)
+									podar = true;
+								
+							}else{
+								beta = hijo.valor;
+								if(beta<=alfa)
+									podar = true;
+							}	
 						}
+						
 													
 					}
 					
@@ -147,12 +136,20 @@ public class Nodo {
 					}
 				
 					
-					if(valorPoda!=null && valorPoda != Math.abs(Integer.MAX_VALUE)){
-						podar= podar(valorPoda, hijo.valor, estado.getTurno());						
-						
+					if(alfa!=null&&beta!=null && profundidad ==1){
+						if(estado.getTurno()== Jugador.ENEMIGO){
+							alfa = hijo.valor;
+							if(alfa>=beta)
+								podar = true;
+							
+						}else{
+							beta = hijo.valor;
+							if(beta<=alfa)
+								podar = true;
+						}	
 					}
 					
-					
+								
 					
 
 				} catch (MovimientoInvalidoException
@@ -179,25 +176,7 @@ public class Nodo {
 
 	}
 
-	private boolean podar(Integer valorPoda, Integer actual, Jugador turno) {
-
-		if (turno == Jugador.ENEMIGO) {
-			int alfa = actual;
-			if (alfa >= valorPoda) {
-				return true;
-			}
-
-		} else {
-
-			int beta = actual;
-			if (beta <= valorPoda) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
