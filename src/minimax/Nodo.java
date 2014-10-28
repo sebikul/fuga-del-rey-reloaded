@@ -1,6 +1,5 @@
 package minimax;
 
-import models.Ficha;
 import models.Game;
 import models.Jugador;
 import models.Movida;
@@ -9,18 +8,25 @@ import exceptions.BoardPointOutOfBoundsException;
 import exceptions.MovimientoBloqueadoException;
 import exceptions.MovimientoInvalidoException;
 
-public class Nodo implements Comparable<Nodo> {
+public class Nodo {
 
 	private Game estado;
 
 	private Movida movida;
 	private int valor;
 
+	public int getValor() {
+		return valor;
+	}
+
+	private final GraphVizWriter gvw;
+
 	// private List<Nodo> hijos = new ArrayList<Nodo>();
 
-	public Nodo(Game estado, Movida movida) {
+	public Nodo(Game estado, Movida movida, GraphVizWriter gvw) {
 		this.movida = movida;
 		this.estado = estado;
+		this.gvw = gvw;
 	}
 
 	public Movida getMovidaPorProfundidad(int profundidad, boolean prune) {
@@ -39,6 +45,10 @@ public class Nodo implements Comparable<Nodo> {
 			valorPoda = signo * Integer.MAX_VALUE;
 		}
 
+		if (gvw != null) {
+			gvw.addNode(null, this, this.estado.getTurno() == Jugador.GUARDIA);
+		}
+
 		return getMejorEnProfundidad(this, profundidad, valorPoda).movida;
 	}
 
@@ -50,8 +60,7 @@ public class Nodo implements Comparable<Nodo> {
 
 		Nodo mejorHijo = null;
 
-		// TODO iterator de fichas
-		for (Punto punto : nodo.estado) {
+		for (Punto punto : nodo.estado.fichasDelBandoActual()) {
 
 			for (Movida movida : nodo.estado.getPosiblesMovidas(punto)) {
 
@@ -67,13 +76,18 @@ public class Nodo implements Comparable<Nodo> {
 
 					Jugador result = game.mover(movida);
 
-					Nodo hijo = new Nodo(game, movida);
+					Nodo hijo = new Nodo(game, movida, gvw);
 
 					if (result == null) {
 						hijo.valor = game.valorMagico();
 					} else if (result == nodo.estado.getTurno()) {
 						hijo.valor = Integer.MAX_VALUE * signo;
 						hijo.movida.setElegida(true);
+
+						if (gvw != null) {
+							gvw.addNode(nodo, hijo,
+									nodo.estado.getTurno() == Jugador.GUARDIA);
+						}
 						return hijo;
 					}
 
@@ -87,6 +101,14 @@ public class Nodo implements Comparable<Nodo> {
 					} else if ((game.getTurno() == Jugador.GUARDIA && mejorHijo.valor < hijo.valor)
 							|| (game.getTurno() == Jugador.ENEMIGO && mejorHijo.valor > hijo.valor)) {
 						mejorHijo = hijo;
+					} else {
+
+						if (gvw != null) {
+							// La movida es descartada, la agrego al arbol
+							gvw.addNode(nodo, hijo,
+									nodo.estado.getTurno() == Jugador.GUARDIA);
+
+						}
 					}
 
 				} catch (MovimientoInvalidoException
@@ -127,6 +149,11 @@ public class Nodo implements Comparable<Nodo> {
 
 		mejorHijo.movida.setElegida(true);
 
+		if (gvw != null) {
+			// Es la meor movida, todavia no la agregamos
+			gvw.addNode(nodo, mejorHijo,
+					nodo.estado.getTurno() == Jugador.GUARDIA);
+		}
 		return mejorHijo;
 
 	}
@@ -183,12 +210,6 @@ public class Nodo implements Comparable<Nodo> {
 
 	public Game getEstado() {
 		return estado;
-	}
-
-	@Override
-	public int compareTo(Nodo o) {
-
-		return movida.getValor() - o.getMovida().getValor();
 	}
 
 	public Movida getMovida() {

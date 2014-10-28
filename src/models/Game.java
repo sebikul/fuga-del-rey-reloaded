@@ -9,7 +9,7 @@ import exceptions.BoardPointOutOfBoundsException;
 import exceptions.MovimientoBloqueadoException;
 import exceptions.MovimientoInvalidoException;
 
-public class Game implements Iterable<Punto> {
+public class Game {
 
 	private int[] cantidadDeFichas = new int[] { 0, 0 };
 
@@ -44,11 +44,9 @@ public class Game implements Iterable<Punto> {
 
 	private Punto buscarAlRey() {
 
-		for (int fila = 0; fila < size; fila++) {
-			for (int columna = 0; columna < size; columna++) {
-				if (tablero[fila][columna] == Ficha.REY) {
-					return new Punto(fila, columna);
-				}
+		for (Punto punto : this.fichas()) {
+			if (punto.getFicha() == Ficha.REY) {
+				return punto;
 			}
 		}
 
@@ -581,7 +579,7 @@ public class Game implements Iterable<Punto> {
 		// System.out.println("LA CANTIDAD DE MATARALREY ES: " + matarAlRey);
 		int heuristica = valor + 2 * bloqueos + 3 * cuadranteMenor + 6
 				* matarAlRey;
-		// System.out.println("EL VALORCITO ES : " + heuristica );
+		// System.out.println("EL VALORCITO ES : " + heuristica);
 		return Math.abs(heuristica);
 	}
 
@@ -701,66 +699,130 @@ public class Game implements Iterable<Punto> {
 
 	}
 
-	@Override
-	public Iterator<Punto> iterator() {
+	public Iterable<Punto> fichasDelBandoActual() {
 
-		return new Iterator<Punto>() {
+		return new Iterable<Punto>() {
 
-			private Ficha[][] tablero = Game.this.tablero;
+			public Iterator<Punto> iterator() {
 
-			private int fila = 0;
-			private int columna = 0;
+				return new Iterator<Punto>() {
 
-			@Override
-			public boolean hasNext() {
+					private Ficha[][] tablero = Game.this.tablero;
 
-				Ficha ficha;
+					private int fila = 0;
+					private int columna = 0;
 
-				if (fila == size) {
-					return false;
-				}
+					@Override
+					public boolean hasNext() {
 
-				if (columna < size) {
+						Ficha ficha;
 
-					ficha = tablero[fila][columna];
+						if (fila == size) {
+							return false;
+						}
 
-					if ((turno == Jugador.ENEMIGO && ficha == Ficha.ENEMIGO)
-							|| (turno == Jugador.GUARDIA && (ficha == Ficha.GUARDIA || ficha == Ficha.REY))) {
-						return true;
-					} else {
+						if (columna < size) {
 
-						columna++;
-						return hasNext();
+							ficha = tablero[fila][columna];
+
+							if ((turno == Jugador.ENEMIGO && ficha == Ficha.ENEMIGO)
+									|| (turno == Jugador.GUARDIA && (ficha == Ficha.GUARDIA || ficha == Ficha.REY))) {
+								return true;
+							} else {
+
+								columna++;
+								return hasNext();
+							}
+
+						} else {
+							columna = columna % size;
+							fila++;
+
+							return hasNext();
+
+						}
+
 					}
 
-				} else {
-					columna = columna % size;
-					fila++;
+					@Override
+					public Punto next() {
 
-					return hasNext();
+						Punto punto = new Punto(fila, columna,
+								tablero[fila][columna]);
 
-				}
+						columna++;
 
-			}
+						return punto;
 
-			@Override
-			public Punto next() {
+					}
 
-				Punto punto = new Punto(fila, columna, tablero[fila][columna]);
+					@Override
+					public void remove() {
+						// TODO Auto-generated method stub
 
-				columna++;
+					}
 
-				return punto;
-
-			}
-
-			@Override
-			public void remove() {
-				// TODO Auto-generated method stub
+				};
 
 			}
-
 		};
+	}
 
+	public Iterable<Punto> fichas() {
+
+		return new Iterable<Punto>() {
+
+			public Iterator<Punto> iterator() {
+
+				return new Iterator<Punto>() {
+
+					private Ficha[][] tablero = Game.this.tablero;
+
+					private int fila = 0;
+					private int columna = 0;
+
+					@Override
+					public boolean hasNext() {
+
+						if (fila == size) {
+							return false;
+						}
+
+						if (columna < size) {
+
+							return true;
+
+						} else {
+							columna = columna % size;
+							fila++;
+
+							return hasNext();
+
+						}
+
+					}
+
+					@Override
+					public Punto next() {
+
+						Punto punto = new Punto(fila, columna,
+								tablero[fila][columna]);
+
+						columna++;
+
+						return punto;
+
+					}
+
+					@Override
+					public void remove() {
+						// TODO Auto-generated method stub
+
+					}
+
+				};
+
+			}
+		};
 	}
 }
