@@ -53,6 +53,8 @@ public class GraphVizWriter {
 
 			if (nodo.getMovida().isElegida()) {
 				line += ",color=lightblue";
+			} else if (nodo.getMovida().isPodada()) {
+				line += ",color=red";
 			}
 
 		}
