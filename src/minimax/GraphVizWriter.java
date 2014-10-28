@@ -26,12 +26,6 @@ public class GraphVizWriter {
 
 		writer.println("digraph minimax {");
 
-		// writer.println("0 [label=\"START\"]");
-
-	}
-
-	public void initializeDotFile() throws IllegalAccessException {
-
 	}
 
 	public void finalizeDotFile() throws IllegalAccessException {

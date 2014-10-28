@@ -21,8 +21,6 @@ public class Nodo {
 
 	private final GraphVizWriter gvw;
 
-	// private List<Nodo> hijos = new ArrayList<Nodo>();
-
 	public Nodo(Game estado, Movida movida, GraphVizWriter gvw) {
 		this.movida = movida;
 		this.estado = estado;

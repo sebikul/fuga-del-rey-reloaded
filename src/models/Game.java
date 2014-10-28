@@ -186,11 +186,7 @@ public class Game {
 		Ficha ficha;
 
 		// abajo
-		for (columna = origen.getColumna(), fila = origen.getFila(); fila < size; fila++) {
-
-			if (fila == origen.getFila() && columna == origen.getColumna()) {
-				continue;
-			}
+		for (columna = origen.getColumna(), fila = origen.getFila() + 1; fila < size; fila++) {
 
 			ficha = tablero[fila][columna];
 
@@ -203,11 +199,7 @@ public class Game {
 		}
 
 		// arriba
-		for (columna = origen.getColumna(), fila = origen.getFila(); fila >= 0; fila--) {
-
-			if (fila == origen.getFila() && columna == origen.getColumna()) {
-				continue;
-			}
+		for (columna = origen.getColumna(), fila = origen.getFila() - 1; fila >= 0; fila--) {
 
 			ficha = tablero[fila][columna];
 
@@ -220,11 +212,7 @@ public class Game {
 		}
 
 		// derecha
-		for (fila = origen.getFila(), columna = origen.getColumna(); columna < size; columna++) {
-
-			if (fila == origen.getFila() && columna == origen.getColumna()) {
-				continue;
-			}
+		for (fila = origen.getFila(), columna = origen.getColumna() + 1; columna < size; columna++) {
 
 			ficha = tablero[fila][columna];
 
@@ -236,11 +224,7 @@ public class Game {
 		}
 
 		// izquierda
-		for (fila = origen.getFila(), columna = origen.getColumna(); columna >= 0; columna--) {
-
-			if (fila == origen.getFila() && columna == origen.getColumna()) {
-				continue;
-			}
+		for (fila = origen.getFila(), columna = origen.getColumna() - 1; columna >= 0; columna--) {
 
 			ficha = tablero[fila][columna];
 
@@ -251,7 +235,6 @@ public class Game {
 			lista.add(new Movida(origen, new Punto(fila, columna)));
 		}
 
-		// TODO
 		return lista;
 
 	}
@@ -423,8 +406,6 @@ public class Game {
 		tablero[medio][maxIndex - 1] = Ficha.ENEMIGO;
 		cantidadDeFichas[Jugador.ENEMIGO.getIndice()] += 4;
 
-		//
-		// TODO
 		int max = esTableroLargo() ? (5 - 1) / 2 : (3 - 1) / 2;
 
 		for (int i = medio; i <= (medio + max); i++) {
@@ -656,8 +637,6 @@ public class Game {
 						/* El rey esta rodeado */
 						if (bloqueos == 4
 								|| (bloqueos == 3 && bloqueosPorGurdias == 1)) {
-							System.out
-									.println("El Rey esta bloqueado y se lo comieron");
 							tablero[fila][columna] = Ficha.REYMUERTO;
 							return Jugador.ENEMIGO;
 						}
@@ -758,7 +737,6 @@ public class Game {
 
 					@Override
 					public void remove() {
-						// TODO Auto-generated method stub
 
 					}
 
@@ -816,7 +794,7 @@ public class Game {
 
 					@Override
 					public void remove() {
-						// TODO Auto-generated method stub
+						
 
 					}
 

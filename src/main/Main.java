@@ -99,6 +99,10 @@ public class Main {
 
 			GraphicalBoard gui;
 
+			if (saveTree) {
+				throwArgumentErrorAndExit();
+			}
+
 			if (limitByDepth) {
 
 				gui = GraphicalBoard.fromGameWithDepth(juegoArchivo, param,
@@ -120,14 +124,12 @@ public class Main {
 				game = new MiniMaxByDepthGame(juegoArchivo, prune, saveTree,
 						param);
 
-				// TODO
-
 			} else {
 
 				game = new MiniMaxTimedGame(juegoArchivo, prune, saveTree,
 						param);
-
 			}
+			System.out.println(game.getMejorMovida());
 
 			/* Aca falta colocar lo que iria si se ejecuta -console* */
 			// TODO por turno

@@ -16,7 +16,7 @@ public class MiniMaxTimedGame extends MiniMaxGame {
 	}
 
 	@Override
-	protected Movida getMejorMovida() {
+	public Movida getMejorMovida() {
 
 		long comienzo = System.currentTimeMillis();
 		long diff = 0;

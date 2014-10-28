@@ -20,7 +20,6 @@ public abstract class MiniMaxGame {
 			try {
 				gvw = new GraphVizWriter();
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -39,7 +38,7 @@ public abstract class MiniMaxGame {
 		return currentState.getEstado();
 	}
 
-	protected abstract Movida getMejorMovida();
+	public abstract Movida getMejorMovida();
 
 	public boolean ejecutarMovidaDeEnemigo() {
 		Movida movida = getMejorMovida();
@@ -62,7 +61,6 @@ public abstract class MiniMaxGame {
 			try {
 				gvw.finalizeDotFile();
 			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
