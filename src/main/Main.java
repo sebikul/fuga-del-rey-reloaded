@@ -7,6 +7,7 @@ import minimax.MiniMaxGame;
 import minimax.MiniMaxTimedGame;
 import models.Game;
 import models.GameFileParser;
+import exceptions.InvalidArgumentsException;
 import exceptions.InvalidFormatException;
 import gui.GraphicalBoard;
 
@@ -66,6 +67,7 @@ public class Main {
 			} else if (args[5].equals("-tree")) {
 				saveTree = true;
 			} else {
+				
 				throwArgumentErrorAndExit();
 			}
 
@@ -146,16 +148,17 @@ public class Main {
 
 	}
 
-	private static void throwArgumentErrorAndExit() {
-		System.out.println("Argumentos invalidos!");
-
-		printUsage();
-
-		System.exit(1);
-	}
-
-	private static void printUsage() {
-
+	private static void throwArgumentErrorAndExit(){
+			
+				
+		try {
+			throw new InvalidArgumentsException();
+		} catch (InvalidArgumentsException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(0);
+		}
+		
 	}
 
 }
