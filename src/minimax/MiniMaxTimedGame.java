@@ -5,13 +5,13 @@ import models.Movida;
 
 public class MiniMaxTimedGame extends MiniMaxGame {
 
-	private long maxTime;
+	private int timeParamInMillis;
 
 	public MiniMaxTimedGame(Game juegoInicial, boolean prune, boolean saveTree,
 			int time) {
 		super(juegoInicial, prune, saveTree);
 
-		this.maxTime = time * 1000 + System.currentTimeMillis();
+		this.timeParamInMillis = time * 1000;
 
 	}
 
@@ -21,6 +21,9 @@ public class MiniMaxTimedGame extends MiniMaxGame {
 		long comienzo = System.currentTimeMillis();
 		Movida movida = null;
 		Movida ultimaMovida = null;
+		
+		long maxTime=timeParamInMillis+ System.currentTimeMillis();
+		
 		int prof = 1;
 
 		while (System.currentTimeMillis() < maxTime) {
@@ -47,5 +50,4 @@ public class MiniMaxTimedGame extends MiniMaxGame {
 		return ultimaMovida;
 
 	}
-
 }

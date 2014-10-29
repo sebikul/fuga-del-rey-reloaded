@@ -271,8 +271,8 @@ public class GraphicalBoard {
 
 		System.out.println(game.getCurrentGame());
 		
-		//table.setEnabled(false);
-		System.exit(0);
+		table.setEnabled(false);
+		//System.exit(0);
 
 	}
 
