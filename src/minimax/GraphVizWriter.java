@@ -49,18 +49,19 @@ public class GraphVizWriter {
 		} else {
 
 			line += "" + nodo.hashCode() + "[label=\"" + nodo.getMovida()
-					+ nodo.getValor() + "\"";
+					+ (!nodo.getMovida().isPodada() ? nodo.getValor() : "")
+					+ "\"";
 
 			if (nodo.getMovida().isElegida()) {
-				line += ",color=lightblue";
+				line += ", color=lightblue";
 			} else if (nodo.getMovida().isPodada()) {
-				line += ",color=red";
+				line += ", color=red";
 			}
 
-		}
+			if (boxShape) {
+				line += ", shape=box";
+			}
 
-		if (boxShape) {
-			line += " shape=box";
 		}
 
 		line += "]";

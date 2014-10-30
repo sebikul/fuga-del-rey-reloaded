@@ -141,7 +141,7 @@ public class GraphicalBoard {
 
 		frame.setVisible(true);
 
-		// VER QUE PASA CON ESTO actualizarPantalla();
+		// FIXME
 		if (game.getCurrentGame().getTurno() == Jugador.ENEMIGO) {
 			ejecutarMovidaDeMaquina();
 		}
@@ -154,9 +154,9 @@ public class GraphicalBoard {
 		@Override
 		public void mouseClicked(MouseEvent e) {
 
-			if (game.getCurrentGame().getTurno() == Jugador.ENEMIGO) {
-				return;
-			}
+			// if (game.getCurrentGame().getTurno() == Jugador.ENEMIGO) {
+			// return;
+			// }
 
 			int fila = table.rowAtPoint(e.getPoint());
 			int columna = table.columnAtPoint(e.getPoint());
@@ -254,9 +254,11 @@ public class GraphicalBoard {
 
 	private void ejecutarMovidaDeMaquina() {
 
-		if (game.ejecutarMovidaDeEnemigo()) {
+		Jugador result = game.ejecutarMovida();
 
-			gameOver(Jugador.ENEMIGO);
+		if (result != null) {
+
+			gameOver(result);
 		}
 
 	}
@@ -270,9 +272,9 @@ public class GraphicalBoard {
 		lblGameOver.setText("EL JUGADOR " + jugador + " HA GANADO");
 
 		System.out.println(game.getCurrentGame());
-		
+
 		table.setEnabled(false);
-		//System.exit(0);
+		// System.exit(0);
 
 	}
 

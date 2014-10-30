@@ -40,7 +40,19 @@ public abstract class MiniMaxGame {
 
 	public abstract Movida getMejorMovida();
 
-	public boolean ejecutarMovidaDeEnemigo() {
+	public void forceCloseTreeFile() {
+
+		if (gvw != null) {
+			try {
+				gvw.finalizeDotFile();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	public Jugador ejecutarMovida() {
 		Movida movida = getMejorMovida();
 
 		// System.out.println("El valor magico de angie: " + movida.getValor());
@@ -56,21 +68,10 @@ public abstract class MiniMaxGame {
 		}
 
 		currentState = new Nodo(currentState.getEstado(), null, gvw);
-		
-		if(gvw!=null){
-			try {
-				gvw.finalizeDotFile();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			}
-		}
-		
 
-		if (result != null) {
-			return true;
-		}
+		forceCloseTreeFile();
 
-		return false;
+		return result;
 
 	}
 

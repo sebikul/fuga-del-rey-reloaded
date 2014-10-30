@@ -64,8 +64,18 @@ public class Nodo {
 				// una
 				// poda, se setan las siguientes movidas como podadas para luego
 				// incluirlas al �rbol.
+
 				if (podar) {
 					movida.setPodada(true);
+
+					//Hijo dummy para poder agregarlo al arbol.
+					Nodo hijo = new Nodo(null, movida, gvw);
+
+					if (gvw != null) {
+						gvw.addNode(nodo, hijo,
+								nodo.estado.getTurno() == Jugador.GUARDIA);
+					}
+
 					continue;
 				}
 

@@ -132,6 +132,8 @@ public class Main {
 			}
 			System.out.println(game.getMejorMovida());
 
+			game.forceCloseTreeFile();
+
 			/* Aca falta colocar lo que iria si se ejecuta -console* */
 			// TODO por turno
 			// Movida movida = game.getMejorMovida();
