@@ -1,3 +1,0 @@
-exceptions.InvalidArgumentsException
-	at main.Main.throwArgumentErrorAndExit(Main.java:155)
-	at main.Main.main(Main.java:106)
