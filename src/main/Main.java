@@ -156,6 +156,9 @@ public class Main {
 
 	private static void printUsage() {
 
+		System.out
+				.println("usage: java -jar tpe.jar -file archivo (-maxtime n | -depth n) (-visual | -console) [-prune] [-tree]");
+
 	}
 
 }
