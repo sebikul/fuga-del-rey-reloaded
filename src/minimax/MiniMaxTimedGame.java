@@ -1,41 +1,41 @@
 package minimax;
 
 import models.Game;
-import models.Movida;
+import models.Move;
 
 public class MiniMaxTimedGame extends MiniMaxGame {
 
 	private int timeParamInMillis;
 
-	public MiniMaxTimedGame(Game juegoInicial, boolean prune, boolean saveTree,
+	public MiniMaxTimedGame(Game initialGame, boolean prune, boolean saveTree,
 			int time) {
-		super(juegoInicial, prune, saveTree);
+		super(initialGame, prune, saveTree);
 
 		this.timeParamInMillis = time * 1000;
 
 	}
 
 	@Override
-	public Movida getMejorMovida() {
+	public Move getBestMove() {
 
-		long comienzo = System.currentTimeMillis();
-		Movida movida = null;
-		Movida ultimaMovida = null;
+		long start = System.currentTimeMillis();
+		Move move = null;
+		Move lastMove = null;
 		
 		long maxTime=timeParamInMillis+ System.currentTimeMillis();
 		
 		int prof = 1;
 
 		while (System.currentTimeMillis() < maxTime) {
-			movida = currentState.getMovidaPorProfundidad(prof, isPrune(),
+			move = currentState.getMoveByDepth(prof, isPrune(),
 					maxTime);
 
-			if (movida != null) {
-				ultimaMovida = movida;
+			if (move != null) {
+				lastMove = move;
 
 				// diff = System.currentTimeMillis() - comienzo;
 				System.out.println("Tiempo tardado en profundidad " + prof
-						+ " = " + (System.currentTimeMillis() - comienzo)
+						+ " = " + (System.currentTimeMillis() - start)
 						+ "ms");
 				prof++;
 
@@ -45,9 +45,9 @@ public class MiniMaxTimedGame extends MiniMaxGame {
 
 		}
 
-		assert ultimaMovida != null;
+		assert lastMove != null;
 
-		return ultimaMovida;
+		return lastMove;
 
 	}
 }

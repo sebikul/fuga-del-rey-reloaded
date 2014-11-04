@@ -1,15 +1,15 @@
 package minimax;
 
 import models.Game;
-import models.Jugador;
-import models.Movida;
+import models.Player;
+import models.Move;
 import exceptions.BoardPointOutOfBoundsException;
-import exceptions.MovimientoBloqueadoException;
-import exceptions.MovimientoInvalidoException;
+import exceptions.BlockedMoveException;
+import exceptions.InvalidMoveException;
 
 public abstract class MiniMaxGame {
 
-	protected Nodo currentState;
+	protected Node currentState;
 	private boolean prune;
 	protected boolean saveTree = false;
 	private GraphVizWriter gvw = null;
@@ -24,7 +24,7 @@ public abstract class MiniMaxGame {
 			}
 		}
 
-		currentState = new Nodo(juegoInicial, null, gvw);
+		currentState = new Node(juegoInicial, null, gvw);
 
 		this.prune = prune;
 		this.saveTree = saveTree;
@@ -35,10 +35,10 @@ public abstract class MiniMaxGame {
 	}
 
 	public Game getCurrentGame() {
-		return currentState.getEstado();
+		return currentState.getState();
 	}
 
-	public abstract Movida getMejorMovida();
+	public abstract Move getBestMove();
 
 	public void forceCloseTreeFile() {
 
@@ -52,22 +52,22 @@ public abstract class MiniMaxGame {
 
 	}
 
-	public Jugador ejecutarMovida() {
-		Movida movida = getMejorMovida();
+	public Player ejecutarMovida() {
+		Move movida = getBestMove();
 
 		// System.out.println("El valor magico de angie: " + movida.getValor());
 
-		Jugador result = null;
+		Player result = null;
 		try {
-			result = currentState.getEstado().mover(movida);
+			result = currentState.getState().move(movida);
 			// System.out.println("LA MOVIDA A REALIZAR ES    --ORIGEN:"
 			// + movida.getOrigen() + "--DESTINO:" + movida.getDestino());
-		} catch (MovimientoInvalidoException | BoardPointOutOfBoundsException
-				| MovimientoBloqueadoException e) {
+		} catch (InvalidMoveException | BoardPointOutOfBoundsException
+				| BlockedMoveException e) {
 			e.printStackTrace();
 		}
 
-		currentState = new Nodo(currentState.getEstado(), null, gvw);
+		currentState = new Node(currentState.getState(), null, gvw);
 
 		forceCloseTreeFile();
 

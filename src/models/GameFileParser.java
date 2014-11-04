@@ -16,11 +16,11 @@ public class GameFileParser {
 
 		BufferedReader fileReader = new BufferedReader(file);
 
-		Jugador turno;
+		Player turn;
 
 		try {
 			String firstLine = fileReader.readLine();
-			turno = Jugador.fromInt(Integer.valueOf(firstLine));
+			turn = Player.fromInt(Integer.valueOf(firstLine));
 		} catch (IOException e) {
 			try {
 				fileReader.close();
@@ -35,10 +35,10 @@ public class GameFileParser {
 
 		int i = 0;
 
-		int guardias = 0;
-		int enemigos = 0;
+		int guards = 0;
+		int enemies = 0;
 
-		Ficha[][] tablero = null;
+		Piece[][] board = null;
 
 		try {
 			while (fileReader.ready()) {
@@ -47,23 +47,23 @@ public class GameFileParser {
 
 				if (size == -1) {
 					size = line.length();
-					tablero = new Ficha[size][];
+					board = new Piece[size][];
 				} else if (size != line.length()) {
 					throw new InvalidFormatException(line);
 				}
 
 				char[] lineArray = line.toCharArray();
 
-				tablero[i] = new Ficha[size];
+				board[i] = new Piece[size];
 				for (int j = 0; j < size; j++) {
-					tablero[i][j] = Ficha.fromChar(lineArray[j]);
+					board[i][j] = Piece.fromChar(lineArray[j]);
 
-					Ficha ficha = tablero[i][j];
+					Piece ficha = board[i][j];
 
-					if (ficha.getJugador() == Jugador.GUARDIA) {
-						guardias++;
-					} else if (ficha.getJugador() == Jugador.ENEMIGO) {
-						enemigos++;
+					if (ficha.getPlayer() == Player.GUARD) {
+						guards++;
+					} else if (ficha.getPlayer() == Player.ENEMY) {
+						enemies++;
 					}
 
 				}
@@ -83,11 +83,11 @@ public class GameFileParser {
 			}
 		}
 
-		tablero[0][0] = tablero[0][size - 1] = tablero[size - 1][0] = tablero[size - 1][size - 1] = Ficha.CASTILLO;
+		board[0][0] = board[0][size - 1] = board[size - 1][0] = board[size - 1][size - 1] = Piece.CASTLE;
 
-		Game game = new Game(size, tablero, turno);
+		Game game = new Game(size, board, turn);
 
-		game.setCantidadDeFichas(enemigos, guardias);
+		game.setPieceCount(enemies, guards);
 
 		return game;
 

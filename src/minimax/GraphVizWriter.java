@@ -40,7 +40,7 @@ public class GraphVizWriter {
 		writer.close();
 	}
 
-	public void addNode(Nodo parentNode, Nodo nodo, boolean boxShape) {
+	public void addNode(Node parentNode, Node nodo, boolean boxShape) {
 
 		String line = "";
 
@@ -48,13 +48,13 @@ public class GraphVizWriter {
 			line += nodo.hashCode() + " [label=\"START\"";
 		} else {
 
-			line += "" + nodo.hashCode() + "[label=\"" + nodo.getMovida()
-					+ (!nodo.getMovida().isPodada() ? nodo.getValor() : "")
+			line += "" + nodo.hashCode() + "[label=\"" + nodo.getMove()
+					+ (!nodo.getMove().isPruned() ? nodo.getValor() : "")
 					+ "\"";
 
-			if (nodo.getMovida().isElegida()) {
+			if (nodo.getMove().isChoosen()) {
 				line += ", color=lightblue";
-			} else if (nodo.getMovida().isPodada()) {
+			} else if (nodo.getMove().isPruned()) {
 				line += ", color=red";
 			}
 

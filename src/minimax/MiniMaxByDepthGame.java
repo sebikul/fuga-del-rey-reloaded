@@ -1,23 +1,23 @@
 package minimax;
 
 import models.Game;
-import models.Movida;
+import models.Move;
 
 public class MiniMaxByDepthGame extends MiniMaxGame {
 
 	private int depth;
 
-	public MiniMaxByDepthGame(Game juegoInicial, boolean prune,
+	public MiniMaxByDepthGame(Game initialGame, boolean prune,
 			boolean saveTree, int depth) {
-		super(juegoInicial, prune, saveTree);
+		super(initialGame, prune, saveTree);
 
 		this.depth = depth;
 	}
 
 	@Override
-	public Movida getMejorMovida() {
+	public Move getBestMove() {
 
-		Movida movida = currentState.getMovidaPorProfundidad(depth, isPrune(),
+		Move movida = currentState.getMoveByDepth(depth, isPrune(),
 				0);
 
 		return movida;

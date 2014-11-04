@@ -5,18 +5,18 @@ import java.util.Iterator;
 import java.util.List;
 
 import exceptions.BoardPointOutOfBoundsException;
-import exceptions.MovimientoBloqueadoException;
-import exceptions.MovimientoInvalidoException;
+import exceptions.BlockedMoveException;
+import exceptions.InvalidMoveException;
 
 public class Game {
 
-	private int[] cantidadDeFichas = new int[] { 0, 0 };
+	private int[] pieceCount = new int[] { 0, 0 };
 
 	private int size;
 
-	private Ficha[][] tablero;
+	private Piece[][] board;
 
-	private Jugador turno = Jugador.GUARDIA;
+	private Player turn = Player.GUARD;
 
 	public Game(int boardSize) {
 
@@ -27,25 +27,25 @@ public class Game {
 
 		this.size = boardSize;
 
-		this.tablero = new Ficha[size][size];
+		this.board = new Piece[size][size];
 
-		popularTablero();
+		populateBoard();
 
 	}
 
-	public Game(int size, Ficha[][] tablero, Jugador turno) {
+	public Game(int size, Piece[][] board, Player turn) {
 
 		this.size = size;
-		this.tablero = tablero;
-		this.turno = turno;
+		this.board = board;
+		this.turn = turn;
 
 	}
 
-	private Punto buscarAlRey() {
+	private Point findKing() {
 
-		for (Punto punto : this.fichas()) {
-			if (punto.getFicha() == Ficha.REY) {
-				return punto;
+		for (Point point : this.pieces()) {
+			if (point.getPiece() == Piece.KING) {
+				return point;
 			}
 		}
 
@@ -53,142 +53,142 @@ public class Game {
 
 	}
 
-	private void cambiarJugador() {
+	private void switchPlayer() {
 
-		if (turno == Jugador.GUARDIA) {
-			turno = Jugador.ENEMIGO;
-		} else if (turno == Jugador.ENEMIGO) {
-			turno = Jugador.GUARDIA;
+		if (turn == Player.GUARD) {
+			turn = Player.ENEMY;
+		} else if (turn == Player.ENEMY) {
+			turn = Player.GUARD;
 		}
 
 	}
 
-	public Game copiar() {
-		Game tmpgame = new Game(size, null, turno);
+	public Game copy() {
+		Game tmpgame = new Game(size, null, turn);
 
-		tmpgame.tablero = new Ficha[size][size];
+		tmpgame.board = new Piece[size][size];
 
 		for (int i = 0; i < size; i++) {
 			for (int j = 0; j < size; j++) {
-				tmpgame.tablero[i][j] = tablero[i][j];
+				tmpgame.board[i][j] = board[i][j];
 
 			}
 		}
 
-		tmpgame.cantidadDeFichas[Jugador.ENEMIGO.getIndice()] = cantidadDeFichas[Jugador.ENEMIGO
-				.getIndice()];
-		tmpgame.cantidadDeFichas[Jugador.GUARDIA.getIndice()] = cantidadDeFichas[Jugador.GUARDIA
-				.getIndice()];
+		tmpgame.pieceCount[Player.ENEMY.getIndex()] = pieceCount[Player.ENEMY
+				.getIndex()];
+		tmpgame.pieceCount[Player.GUARD.getIndex()] = pieceCount[Player.GUARD
+				.getIndex()];
 
 		return tmpgame;
 	}
 
-	public boolean esAliado(Punto punto) {
+	public boolean isAlly(Point point) {
 
-		return esAliado(punto.getFila(), punto.getColumna());
+		return isAlly(point.getRow(), point.getColumn());
 	}
 
-	public boolean esAliado(int fila, int columna) {
+	public boolean isAlly(int row, int column) {
 
-		if (!puntoEsValido(fila, columna))
+		if (!isValidPoint(row, column))
 			return false;
 
-		Ficha ficha = tablero[fila][columna];
+		Piece piece = board[row][column];
 
-		if (ficha == Ficha.CASTILLO) {
+		if (piece == Piece.CASTLE) {
 			return true;
 		}
 
-		if (turno == Jugador.GUARDIA
-				&& (ficha == Ficha.REY || ficha == Ficha.GUARDIA || ficha == Ficha.TRONO))
+		if (turn == Player.GUARD
+				&& (piece == Piece.KING || piece == Piece.GUARD || piece == Piece.THRONE))
 			return true;
 
-		if (turno == Jugador.ENEMIGO && ficha == Ficha.ENEMIGO)
+		if (turn == Player.ENEMY && piece == Piece.ENEMY)
 			return true;
 
 		return false;
 	}
 
-	public boolean esOponente(Punto punto) {
+	public boolean isOpponent(Point point) {
 
-		return esOponente(punto.getFila(), punto.getColumna());
+		return isOpponent(point.getRow(), point.getColumn());
 	}
 
-	public boolean esOponente(int fila, int columna) {
+	public boolean isOpponent(int row, int column) {
 
-		if (!puntoEsValido(fila, columna))
+		if (!isValidPoint(row, column))
 			return false;
 
-		Ficha ficha = tablero[fila][columna];
+		Piece piece = board[row][column];
 
-		if (ficha == Ficha.CASTILLO) {
+		if (piece == Piece.CASTLE) {
 			return true;
 		}
 
-		if (turno == Jugador.GUARDIA && ficha == Ficha.ENEMIGO) {
+		if (turn == Player.GUARD && piece == Piece.ENEMY) {
 			return true;
 		}
 
-		if (turno == Jugador.ENEMIGO
-				&& (ficha == Ficha.REY || ficha == Ficha.GUARDIA)) {
+		if (turn == Player.ENEMY
+				&& (piece == Piece.KING || piece == Piece.GUARD)) {
 			return true;
 		}
 		return false;
 
 	}
 
-	public boolean esTableroLargo() {
+	public boolean isLongBoard() {
 		return size >= 13;
 	}
 
-	public Ficha getFichaAt(int fila, int columna)
+	public Piece getPieceAt(int row, int column)
 			throws BoardPointOutOfBoundsException {
 
-		if (!puntoEsValido(fila, columna)) {
-			throw new BoardPointOutOfBoundsException(fila, columna);
+		if (!isValidPoint(row, column)) {
+			throw new BoardPointOutOfBoundsException(row, column);
 		}
 
-		return tablero[fila][columna];
+		return board[row][column];
 
 	}
 
-	public List<Movida> getPosiblesMovidas(Punto origen) {
+	public List<Move> getPossibleMoves(Point origin) {
 
-		List<Movida> lista = new ArrayList<Movida>();
+		List<Move> list = new ArrayList<Move>();
 
-		int fila, columna;
+		int row, column;
 
 		// abajo
-		for (columna = origen.getColumna(), fila = origen.getFila() + 1; fila < size
-				&& tablero[fila][columna] == Ficha.VACIO; fila++) {
+		for (column = origin.getColumn(), row = origin.getRow() + 1; row < size
+				&& board[row][column] == Piece.EMPTY; row++) {
 
-			lista.add(new Movida(origen, new Punto(fila, columna)));
+			list.add(new Move(origin, new Point(row, column)));
 
 		}
 
 		// arriba
-		for (columna = origen.getColumna(), fila = origen.getFila() - 1; fila >= 0
-				&& tablero[fila][columna] == Ficha.VACIO; fila--) {
+		for (column = origin.getColumn(), row = origin.getRow() - 1; row >= 0
+				&& board[row][column] == Piece.EMPTY; row--) {
 
-			lista.add(new Movida(origen, new Punto(fila, columna)));
+			list.add(new Move(origin, new Point(row, column)));
 
 		}
 
 		// derecha
-		for (fila = origen.getFila(), columna = origen.getColumna() + 1; columna < size
-				&& tablero[fila][columna] == Ficha.VACIO; columna++) {
+		for (row = origin.getRow(), column = origin.getColumn() + 1; column < size
+				&& board[row][column] == Piece.EMPTY; column++) {
 
-			lista.add(new Movida(origen, new Punto(fila, columna)));
+			list.add(new Move(origin, new Point(row, column)));
 		}
 
 		// izquierda
-		for (fila = origen.getFila(), columna = origen.getColumna() - 1; columna >= 0
-				&& tablero[fila][columna] == Ficha.VACIO; columna--) {
+		for (row = origin.getRow(), column = origin.getColumn() - 1; column >= 0
+				&& board[row][column] == Piece.EMPTY; column--) {
 
-			lista.add(new Movida(origen, new Punto(fila, columna)));
+			list.add(new Move(origin, new Point(row, column)));
 		}
 
-		return lista;
+		return list;
 
 	}
 
@@ -196,111 +196,109 @@ public class Game {
 		return size;
 	}
 
-	public char getTokenAt(int fila, int columna)
+	public char getTokenAt(int row, int column)
 			throws BoardPointOutOfBoundsException {
 
-		return getFichaAt(fila, columna).getToken();
+		return getPieceAt(row, column).getToken();
 
 	}
 
-	public Jugador getTurno() {
-		return turno;
+	public Player getTurn() {
+		return turn;
 	}
 
-	public Jugador mover(Movida movida) throws MovimientoInvalidoException,
-			BoardPointOutOfBoundsException, MovimientoBloqueadoException {
-		return mover(movida.getOrigen(), movida.getDestino());
+	public Player move(Move move) throws InvalidMoveException,
+			BoardPointOutOfBoundsException, BlockedMoveException {
+		return move(move.getOrigin(), move.getDestination());
 	}
 
 	/*
 	 * * Ejecuta el movimiento de _origen a _destino* Valida el turno, el camino
 	 * y los bloqueos
 	 */
-	public Jugador mover(Punto origen, Punto destino)
-			throws MovimientoInvalidoException, BoardPointOutOfBoundsException,
-			MovimientoBloqueadoException {
+	public Player move(Point origin, Point destination)
+			throws InvalidMoveException, BoardPointOutOfBoundsException,
+			BlockedMoveException {
 
-		int medio = (size - 1) / 2;
+		int middle = (size - 1) / 2;
 
-		Ficha ficha = tablero[origen.getFila()][origen.getColumna()];
+		Piece piece = board[origin.getRow()][origin.getColumn()];
 
 		/* El punto esta fuera del tablero */
-		if (!puntoEsValido(origen) || !puntoEsValido(destino)) {
-			throw new BoardPointOutOfBoundsException(origen);
+		if (!isValidPoint(origin) || !isValidPoint(destination)) {
+			throw new BoardPointOutOfBoundsException(origin);
 		}
 
 		/* La fila ó columna de origen y destino no coinciden */
-		if (origen.getFila() != destino.getFila()
-				&& origen.getColumna() != destino.getColumna()) {
-			throw new MovimientoInvalidoException(origen, destino);
+		if (origin.getRow() != destination.getRow()
+				&& origin.getColumn() != destination.getColumn()) {
+			throw new InvalidMoveException(origin, destination);
 		}
 
-		if (!esAliado(origen)) {
-			throw new MovimientoInvalidoException(origen, destino);
+		if (!isAlly(origin)) {
+			throw new InvalidMoveException(origin, destination);
 		}
 
 		/* Verifica si el destino es un castillo y la ficha no es el rey */
-		if (ficha != Ficha.REY
-				&& (destino.equals(0, 0) || destino.equals(0, size - 1)
-						|| destino.equals(size - 1, 0) || destino.equals(
-						size - 1, size - 1))) {
-			throw new MovimientoInvalidoException(origen, destino);
+		if (piece != Piece.KING
+				&& (destination.equals(0, 0) || destination.equals(0, size - 1)
+						|| destination.equals(size - 1, 0) || destination
+							.equals(size - 1, size - 1))) {
+			throw new InvalidMoveException(origin, destination);
 
 		}
 
 		/* Verifica si el destino es un castillo y la ficha es el rey */
-		if (ficha == Ficha.REY
-				&& (destino.equals(0, 0) || destino.equals(0, size - 1)
-						|| destino.equals(size - 1, 0) || destino.equals(
-						size - 1, size - 1))) {
-			return Jugador.GUARDIA;
+		if (piece == Piece.KING
+				&& (destination.equals(0, 0) || destination.equals(0, size - 1)
+						|| destination.equals(size - 1, 0) || destination
+							.equals(size - 1, size - 1))) {
+			return Player.GUARD;
 		}
 
 		/* Chequea que no pueda ir una ficha que no sea el rey al trono */
-		if (ficha != Ficha.REY && destino.equals(medio, medio)) {
-			throw new MovimientoInvalidoException(origen, destino);
+		if (piece != Piece.KING && destination.equals(middle, middle)) {
+			throw new InvalidMoveException(origin, destination);
 		}
 
 		/* La ficha no se puede quedar en el mismo lugar */
-		if (origen.equals(destino)) {
-			throw new MovimientoInvalidoException(origen, destino);
+		if (origin.equals(destination)) {
+			throw new InvalidMoveException(origin, destination);
 		}
 
 		/* Se verifica que el camino este vacio, y sea valido */
-		for (int fila = origen.getFila(); origen.getFila() < destino.getFila() ? fila <= destino
-				.getFila() : fila >= destino.getFila(); fila += (origen
-				.getFila() < destino.getFila() ? 1 : -1)) {
+		for (int row = origin.getRow(); origin.getRow() < destination.getRow() ? row <= destination
+				.getRow() : row >= destination.getRow(); row += (origin
+				.getRow() < destination.getRow() ? 1 : -1)) {
 
-			for (int columna = origen.getColumna(); origen.getColumna() < destino
-					.getColumna() ? columna <= destino.getColumna()
-					: columna >= destino.getColumna(); columna += origen
-					.getColumna() < destino.getColumna() ? 1 : -1) {
+			for (int column = origin.getColumn(); origin.getColumn() < destination
+					.getColumn() ? column <= destination.getColumn()
+					: column >= destination.getColumn(); column += origin
+					.getColumn() < destination.getColumn() ? 1 : -1) {
 
-				if (!origen.equals(fila, columna)) {
+				if (!origin.equals(row, column)) {
 					/*
 					 * Verifica si el camino esta bloqueado por otra ficha o si
 					 * es el tablero largo y no se es el enemigo
 					 */
 
-					Ficha tmpFicha = tablero[fila][columna];
+					Piece tmpPiece = board[row][column];
 
 					/*
 					 * Verifica que todo el camino este libre, el caso del trono
 					 * se analiza despues
 					 */
-					if (tmpFicha != Ficha.VACIO && tmpFicha != Ficha.TRONO) {
-						throw new MovimientoBloqueadoException(new Punto(fila,
-								columna));
+					if (tmpPiece != Piece.EMPTY && tmpPiece != Piece.THRONE) {
+						throw new BlockedMoveException(new Point(row, column));
 					}
 
 					/*
 					 * Verifica que el tablero sea largo y los guardias no
 					 * puedan pasar por el trono
 					 */
-					if (esTableroLargo() && tmpFicha == Ficha.TRONO
-							&& ficha == Ficha.GUARDIA) {
-						throw new MovimientoBloqueadoException(new Punto(fila,
-								columna));
+					if (isLongBoard() && tmpPiece == Piece.THRONE
+							&& piece == Piece.GUARD) {
+						throw new BlockedMoveException(new Point(row, column));
 					}
 
 				}
@@ -309,92 +307,92 @@ public class Game {
 
 		}
 
-		if (origen.equals(medio, medio)) {
-			tablero[origen.getFila()][origen.getColumna()] = Ficha.TRONO;
+		if (origin.equals(middle, middle)) {
+			board[origin.getRow()][origin.getColumn()] = Piece.THRONE;
 		} else {
-			tablero[origen.getFila()][origen.getColumna()] = Ficha.VACIO;
+			board[origin.getRow()][origin.getColumn()] = Piece.EMPTY;
 		}
 
-		tablero[destino.getFila()][destino.getColumna()] = ficha;
+		board[destination.getRow()][destination.getColumn()] = piece;
 
-		return verificarBloqueos(destino);
+		return verifyBlockings(destination);
 
 	}
 
-	private void popularTablero() {
+	private void populateBoard() {
 
 		int maxIndex = size - 1;
-		int medio = maxIndex / 2;
+		int middle = maxIndex / 2;
 
-		tablero[0][0] = tablero[0][maxIndex] = tablero[maxIndex][0] = tablero[maxIndex][maxIndex] = Ficha.CASTILLO;
+		board[0][0] = board[0][maxIndex] = board[maxIndex][0] = board[maxIndex][maxIndex] = Piece.CASTLE;
 
-		tablero[medio][medio] = Ficha.REY;
-		cantidadDeFichas[Jugador.GUARDIA.getIndice()] += 1;
+		board[middle][middle] = Piece.KING;
+		pieceCount[Player.GUARD.getIndex()] += 1;
 
-		tablero[1][medio] = Ficha.ENEMIGO;
-		tablero[medio][1] = Ficha.ENEMIGO;
+		board[1][middle] = Piece.ENEMY;
+		board[middle][1] = Piece.ENEMY;
 
-		tablero[maxIndex - 1][medio] = Ficha.ENEMIGO;
-		tablero[medio][maxIndex - 1] = Ficha.ENEMIGO;
-		cantidadDeFichas[Jugador.ENEMIGO.getIndice()] += 4;
+		board[maxIndex - 1][middle] = Piece.ENEMY;
+		board[middle][maxIndex - 1] = Piece.ENEMY;
+		pieceCount[Player.ENEMY.getIndex()] += 4;
 
-		int max = esTableroLargo() ? (5 - 1) / 2 : (3 - 1) / 2;
+		int max = isLongBoard() ? (5 - 1) / 2 : (3 - 1) / 2;
 
-		for (int i = medio; i <= (medio + max); i++) {
+		for (int i = middle; i <= (middle + max); i++) {
 
-			tablero[0][i] = Ficha.ENEMIGO;
-			tablero[i][0] = Ficha.ENEMIGO;
+			board[0][i] = Piece.ENEMY;
+			board[i][0] = Piece.ENEMY;
 
-			tablero[0][maxIndex - i] = Ficha.ENEMIGO;
-			tablero[maxIndex - i][0] = Ficha.ENEMIGO;
+			board[0][maxIndex - i] = Piece.ENEMY;
+			board[maxIndex - i][0] = Piece.ENEMY;
 
-			tablero[maxIndex][i] = Ficha.ENEMIGO;
-			tablero[i][maxIndex] = Ficha.ENEMIGO;
+			board[maxIndex][i] = Piece.ENEMY;
+			board[i][maxIndex] = Piece.ENEMY;
 
-			tablero[maxIndex][maxIndex - i] = Ficha.ENEMIGO;
-			tablero[maxIndex - i][maxIndex] = Ficha.ENEMIGO;
-			cantidadDeFichas[Jugador.ENEMIGO.getIndice()] += 8;
+			board[maxIndex][maxIndex - i] = Piece.ENEMY;
+			board[maxIndex - i][maxIndex] = Piece.ENEMY;
+			pieceCount[Player.ENEMY.getIndex()] += 8;
 
 		}
 
-		for (int i = medio - 1; i <= medio + 1; i++) {
-			for (int j = medio - 1; j <= medio + 1; j++) {
-				if (i != medio || j != medio) {
-					tablero[i][j] = Ficha.GUARDIA;
-					cantidadDeFichas[Jugador.GUARDIA.getIndice()] += 1;
+		for (int i = middle - 1; i <= middle + 1; i++) {
+			for (int j = middle - 1; j <= middle + 1; j++) {
+				if (i != middle || j != middle) {
+					board[i][j] = Piece.GUARD;
+					pieceCount[Player.GUARD.getIndex()] += 1;
 
 				}
 
 			}
 		}
 
-		if (esTableroLargo()) {
+		if (isLongBoard()) {
 
-			tablero[medio][medio + 2] = Ficha.GUARDIA;
-			tablero[medio + 2][medio] = Ficha.GUARDIA;
-			tablero[medio][medio - 2] = Ficha.GUARDIA;
-			tablero[medio - 2][medio] = Ficha.GUARDIA;
-			cantidadDeFichas[Jugador.GUARDIA.getIndice()] += 4;
+			board[middle][middle + 2] = Piece.GUARD;
+			board[middle + 2][middle] = Piece.GUARD;
+			board[middle][middle - 2] = Piece.GUARD;
+			board[middle - 2][middle] = Piece.GUARD;
+			pieceCount[Player.GUARD.getIndex()] += 4;
 
 		}
 
-		for (int fila = 0; fila < size; fila++) {
-			for (int columna = 0; columna < size; columna++) {
-				if (tablero[fila][columna] == null) {
-					tablero[fila][columna] = Ficha.VACIO;
+		for (int row = 0; row < size; row++) {
+			for (int column = 0; column < size; column++) {
+				if (board[row][column] == null) {
+					board[row][column] = Piece.EMPTY;
 				}
 			}
 		}
 
 	}
 
-	private boolean puntoEsValido(Punto punto) {
+	private boolean isValidPoint(Point punto) {
 
-		return puntoEsValido(punto.getFila(), punto.getColumna());
+		return isValidPoint(punto.getRow(), punto.getColumn());
 
 	}
 
-	private boolean puntoEsValido(int fila, int columna) {
+	private boolean isValidPoint(int fila, int columna) {
 
 		return fila >= 0 && fila < size && columna < size && columna >= 0;
 
@@ -423,7 +421,7 @@ public class Game {
 			for (int j = 0; j < size; j++) {
 
 				str += (j == 0 ? "" : "    ")
-						+ (tablero[i][j] == Ficha.VACIO ? " " : tablero[i][j]
+						+ (board[i][j] == Piece.EMPTY ? " " : board[i][j]
 								.getToken()) + " ";
 
 			}
@@ -438,46 +436,46 @@ public class Game {
 
 	}
 
-	public int valorMagico() {
+	public int magicValue() {
 
-		int valor = cantidadDeFichas[Jugador.ENEMIGO.getIndice()]
-				- cantidadDeFichas[Jugador.GUARDIA.getIndice()];
+		int valor = pieceCount[Player.ENEMY.getIndex()]
+				- pieceCount[Player.GUARD.getIndex()];
 
-		int bloqueos = 0;
-		int cuadranteMenor = 0;
-		int matarAlRey = 0;
+		int blockings = 0;
+		int lowerCuadrant = 0;
+		int killTheKing = 0;
 
 		// valor = valor * valor;
 
-		Punto rey = buscarAlRey();
+		Point king = findKing();
 
-		if (rey == null) {
+		if (king == null) {
 			return Integer.MAX_VALUE;
 		}
 
-		for (int columna = rey.getColumna() - 2; columna <= rey.getColumna() + 2; columna++) {
-			for (int fila = rey.getFila() - 2; fila <= rey.getFila() + 2; fila++) {
+		for (int column = king.getColumn() - 2; column <= king.getColumn() + 2; column++) {
+			for (int row = king.getRow() - 2; row <= king.getRow() + 2; row++) {
 
-				if (fila == rey.getFila() && columna == rey.getColumna()) {
+				if (row == king.getRow() && column == king.getColumn()) {
 					continue;
 				}
 
-				if (puntoEsValido(fila, columna)
-						&& tablero[fila][columna] == Ficha.ENEMIGO) {
-					bloqueos++;
+				if (isValidPoint(row, column)
+						&& board[row][column] == Piece.ENEMY) {
+					blockings++;
 				}
 
-				if (puntoEsValido(fila, columna)
-						&& tablero[fila][columna] == Ficha.ENEMIGO) {
+				if (isValidPoint(row, column)
+						&& board[row][column] == Piece.ENEMY) {
 
-					if (cuadranteMenor(fila, columna, rey.getFila(),
-							rey.getColumna())) {
-						cuadranteMenor++;
+					if (lowerCuadrant(row, column, king.getRow(),
+							king.getColumn())) {
+						lowerCuadrant++;
 					}
 
-					if (estaEncerrandoAlRey(fila, columna, rey.getFila(),
-							rey.getColumna())) {
-						matarAlRey++;
+					if (isTrappingKing(row, column, king.getRow(),
+							king.getColumn())) {
+						killTheKing++;
 					}
 
 				}
@@ -490,8 +488,8 @@ public class Game {
 		// System.out.println("LA CANTIDAD DE CUADRANTEMENOR ES: " +
 		// cuadranteMenor);
 		// System.out.println("LA CANTIDAD DE MATARALREY ES: " + matarAlRey);
-		int heuristica = valor + 2 * bloqueos + 3 * cuadranteMenor + 6
-				* matarAlRey;
+		int heuristica = valor + 2 * blockings + 3 * lowerCuadrant + 6
+				* killTheKing;
 		// System.out.println("EL VALORCITO ES : " + heuristica);
 		return Math.abs(heuristica);
 	}
@@ -500,12 +498,12 @@ public class Game {
 	 * * Verifica si estoy en uno de los cuatro puntos validos para matar al Rey
 	 */
 
-	private boolean estaEncerrandoAlRey(int filaActual, int columnaActual,
-			int filaRey, int columnaRey) {
-		return (filaActual == filaRey && columnaActual == columnaRey + 1)
-				|| (filaActual == filaRey && columnaActual == columnaRey - 1)
-				|| (filaActual + 1 == filaRey && columnaActual == columnaRey)
-				|| (filaActual - 1 == filaRey && columnaActual == columnaRey);
+	private boolean isTrappingKing(int currentRow, int currentColumn,
+			int kingRow, int kingColumn) {
+		return (currentRow == kingRow && currentColumn == kingColumn + 1)
+				|| (currentRow == kingRow && currentColumn == kingColumn - 1)
+				|| (currentRow + 1 == kingRow && currentColumn == kingColumn)
+				|| (currentRow - 1 == kingRow && currentColumn == kingColumn);
 	}
 
 	/*
@@ -513,49 +511,50 @@ public class Game {
 	 * estan en el cuadrante mas chico
 	 */
 
-	private boolean cuadranteMenor(int filaActual, int columnaActual,
-			int filaRey, int columnaRey) {
-		return (filaActual == filaRey - 1 && columnaActual == columnaRey - 1)
-				|| (filaActual == filaRey + 1 && columnaActual == columnaRey + 1)
-				|| (filaActual == filaRey - 1 && columnaActual == columnaRey + 1)
-				|| (filaActual == filaRey + 1 && columnaActual == columnaRey - 1);
+	private boolean lowerCuadrant(int currentRow, int currentColumn,
+			int kingRow, int kingColumn) {
+		return (currentRow == kingRow - 1 && currentColumn == kingColumn - 1)
+				|| (currentRow == kingRow + 1 && currentColumn == kingColumn + 1)
+				|| (currentRow == kingRow - 1 && currentColumn == kingColumn + 1)
+				|| (currentRow == kingRow + 1 && currentColumn == kingColumn - 1);
 	}
 
 	/*
 	 * * Verifica si la ficha movida hacia _destino produjo algun bloqueo
 	 */
-	private Jugador verificarBloqueos(Punto destino) {
+	private Player verifyBlockings(Point destination) {
 
 		/* Itera sobre los puntos adyacentes */
-		for (int columna = destino.getColumna() - 1; columna <= destino
-				.getColumna() + 1; columna++) {
-			for (int fila = destino.getFila() - 1; fila <= destino.getFila() + 1; fila++) {
+		for (int column = destination.getColumn() - 1; column <= destination
+				.getColumn() + 1; column++) {
+			for (int row = destination.getRow() - 1; row <= destination
+					.getRow() + 1; row++) {
 
-				if ((fila != destino.getFila() && columna != destino
-						.getColumna()) || destino.equals(fila, columna)) {
+				if ((row != destination.getRow() && column != destination
+						.getColumn()) || destination.equals(row, column)) {
 					continue;
 				}
 
-				if (esOponente(fila, columna)) {
+				if (isOpponent(row, column)) {
 
-					if (tablero[fila][columna] == Ficha.REY) {
+					if (board[row][column] == Piece.KING) {
 
-						int bloqueos = 0;
+						int blockings = 0;
 
-						int bloqueosPorGurdias = 0;
+						int blockingsByGuard = 0;
 
 						/* Verifica que el rey este rodeado por 4 aliados */
-						for (int tmpCol = columna - 1; tmpCol <= columna + 1; tmpCol++) {
-							for (int tmpFil = fila - 1; tmpFil <= fila + 1; tmpFil++) {
+						for (int tmpColumn = column - 1; tmpColumn <= column + 1; tmpColumn++) {
+							for (int tmpRow = row - 1; tmpRow <= row + 1; tmpRow++) {
 
-								if (!((tmpFil != fila && tmpCol != columna) || (tmpFil == fila && tmpCol == columna))) {
+								if (!((tmpRow != row && tmpColumn != column) || (tmpRow == row && tmpColumn == column))) {
 
-									if (esAliado(tmpFil, tmpCol)
-											|| !puntoEsValido(tmpFil, tmpCol)) {
-										bloqueos++;
+									if (isAlly(tmpRow, tmpColumn)
+											|| !isValidPoint(tmpRow, tmpColumn)) {
+										blockings++;
 
-									} else if (esOponente(tmpFil, tmpCol)) {
-										bloqueosPorGurdias++;
+									} else if (isOpponent(tmpRow, tmpColumn)) {
+										blockingsByGuard++;
 									}
 								}
 
@@ -564,10 +563,10 @@ public class Game {
 						}
 
 						/* El rey esta rodeado */
-						if (bloqueos == 4
-								|| (bloqueos == 3 && bloqueosPorGurdias == 1)) {
-							tablero[fila][columna] = Ficha.REYMUERTO;
-							return Jugador.ENEMIGO;
+						if (blockings == 4
+								|| (blockings == 3 && blockingsByGuard == 1)) {
+							board[row][column] = Piece.DEADKING;
+							return Player.ENEMY;
 						}
 
 					} else {
@@ -575,18 +574,20 @@ public class Game {
 						 * La ficha oponente no es el rey, veo si esta capturada
 						 */
 
-						if (esAliado(
-								destino.getFila() + (fila - destino.getFila())
-										* 2, destino.getColumna()
-										+ (columna - destino.getColumna()) * 2)) {
+						if (isAlly(
+								destination.getRow()
+										+ (row - destination.getRow()) * 2,
+								destination.getColumn()
+										+ (column - destination.getColumn())
+										* 2)) {
 
-							cantidadDeFichas[tablero[fila][columna]
-									.getJugador().getIndice()]--;
+							pieceCount[board[row][column].getPlayer()
+									.getIndex()]--;
 
-							tablero[fila][columna] = Ficha.VACIO;
+							board[row][column] = Piece.EMPTY;
 
-							if (cantidadDeFichas[Jugador.ENEMIGO.getIndice()] == 0) {
-								return Jugador.GUARDIA;
+							if (pieceCount[Player.ENEMY.getIndex()] == 0) {
+								return Player.GUARD;
 							}
 
 						}
@@ -598,57 +599,57 @@ public class Game {
 
 		}
 
-		cambiarJugador();
+		switchPlayer();
 
 		return null;
 
 	}
 
-	public void setCantidadDeFichas(int enemigos, int guardias) {
+	public void setPieceCount(int enemies, int guards) {
 
-		cantidadDeFichas[Jugador.ENEMIGO.getIndice()] = enemigos;
-		cantidadDeFichas[Jugador.GUARDIA.getIndice()] = guardias;
+		pieceCount[Player.ENEMY.getIndex()] = enemies;
+		pieceCount[Player.GUARD.getIndex()] = guards;
 
 	}
 
-	public Iterable<Punto> fichasDelBandoActual() {
+	public Iterable<Point> currentTurnPieces() {
 
-		return new Iterable<Punto>() {
+		return new Iterable<Point>() {
 
-			public Iterator<Punto> iterator() {
+			public Iterator<Point> iterator() {
 
-				return new Iterator<Punto>() {
+				return new Iterator<Point>() {
 
-					private Ficha[][] tablero = Game.this.tablero;
+					private Piece[][] board = Game.this.board;
 
-					private int fila = 0;
-					private int columna = 0;
+					private int row = 0;
+					private int column = 0;
 
 					@Override
 					public boolean hasNext() {
 
-						Ficha ficha;
+						Piece ficha;
 
-						if (fila == size) {
+						if (row == size) {
 							return false;
 						}
 
-						if (columna < size) {
+						if (column < size) {
 
-							ficha = tablero[fila][columna];
+							ficha = board[row][column];
 
-							if ((turno == Jugador.ENEMIGO && ficha == Ficha.ENEMIGO)
-									|| (turno == Jugador.GUARDIA && (ficha == Ficha.GUARDIA || ficha == Ficha.REY))) {
+							if ((turn == Player.ENEMY && ficha == Piece.ENEMY)
+									|| (turn == Player.GUARD && (ficha == Piece.GUARD || ficha == Piece.KING))) {
 								return true;
 							} else {
 
-								columna++;
+								column++;
 								return hasNext();
 							}
 
 						} else {
-							columna = columna % size;
-							fila++;
+							column = column % size;
+							row++;
 
 							return hasNext();
 
@@ -657,14 +658,13 @@ public class Game {
 					}
 
 					@Override
-					public Punto next() {
+					public Point next() {
 
-						Punto punto = new Punto(fila, columna,
-								tablero[fila][columna]);
+						Point point = new Point(row, column, board[row][column]);
 
-						columna++;
+						column++;
 
-						return punto;
+						return point;
 
 					}
 
@@ -679,33 +679,33 @@ public class Game {
 		};
 	}
 
-	public Iterable<Punto> fichas() {
+	public Iterable<Point> pieces() {
 
-		return new Iterable<Punto>() {
+		return new Iterable<Point>() {
 
-			public Iterator<Punto> iterator() {
+			public Iterator<Point> iterator() {
 
-				return new Iterator<Punto>() {
+				return new Iterator<Point>() {
 
-					private Ficha[][] tablero = Game.this.tablero;
+					private Piece[][] board = Game.this.board;
 
-					private int fila = 0;
-					private int columna = 0;
+					private int row = 0;
+					private int column = 0;
 
 					@Override
 					public boolean hasNext() {
 
-						if (fila == size) {
+						if (row == size) {
 							return false;
 						}
 
-						if (columna < size) {
+						if (column < size) {
 
 							return true;
 
 						} else {
-							columna = columna % size;
-							fila++;
+							column = column % size;
+							row++;
 
 							return hasNext();
 
@@ -714,12 +714,11 @@ public class Game {
 					}
 
 					@Override
-					public Punto next() {
+					public Point next() {
 
-						Punto punto = new Punto(fila, columna,
-								tablero[fila][columna]);
+						Point punto = new Point(row, column, board[row][column]);
 
-						columna++;
+						column++;
 
 						return punto;
 

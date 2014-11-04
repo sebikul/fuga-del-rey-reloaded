@@ -130,7 +130,7 @@ public class Main {
 				game = new MiniMaxTimedGame(juegoArchivo, prune, saveTree,
 						param);
 			}
-			System.out.println(game.getMejorMovida());
+			System.out.println(game.getBestMove());
 
 			game.forceCloseTreeFile();
 

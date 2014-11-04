@@ -1,22 +1,22 @@
 package exceptions;
 
-import models.Punto;
+import models.Point;
 
 @SuppressWarnings("serial")
 public class BoardPointOutOfBoundsException extends Exception {
 
-	private final Punto punto;
+	private final Point point;
 
-	public BoardPointOutOfBoundsException(Punto punto) {
-		this.punto = punto;
+	public BoardPointOutOfBoundsException(Point point) {
+		this.point = point;
 	}
 
-	public BoardPointOutOfBoundsException(int fila, int columna) {
-		this(new Punto(fila, columna));
+	public BoardPointOutOfBoundsException(int row, int column) {
+		this(new Point(row, column));
 	}
 
-	public Punto getPunto() {
-		return punto;
+	public Point getPunto() {
+		return point;
 	}
 
 }

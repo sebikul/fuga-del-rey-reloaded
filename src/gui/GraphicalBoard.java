@@ -21,13 +21,13 @@ import javax.swing.table.TableModel;
 import minimax.MiniMaxByDepthGame;
 import minimax.MiniMaxGame;
 import minimax.MiniMaxTimedGame;
-import models.Ficha;
+import models.Piece;
 import models.Game;
-import models.Jugador;
-import models.Punto;
+import models.Player;
+import models.Point;
 import exceptions.BoardPointOutOfBoundsException;
-import exceptions.MovimientoBloqueadoException;
-import exceptions.MovimientoInvalidoException;
+import exceptions.BlockedMoveException;
+import exceptions.InvalidMoveException;
 
 public class GraphicalBoard {
 
@@ -41,7 +41,7 @@ public class GraphicalBoard {
 	private JPanel panel_2;
 	private JPanel panel_3;
 	private MouseListener mouseListener;
-	private Punto origen, destino;
+	private Point origen, destino;
 	private JLabel lblGameOver;
 
 	/**
@@ -83,7 +83,7 @@ public class GraphicalBoard {
 	}
 
 	private void actualizarTurno() {
-		lblJugador.setText(game.getCurrentGame().getTurno().name());
+		lblJugador.setText(game.getCurrentGame().getTurn().name());
 	}
 
 	/**
@@ -104,7 +104,7 @@ public class GraphicalBoard {
 		table.setFillsViewportHeight(true);
 		table.setBorder(null);
 		table.setModel(tableModel);
-		table.setDefaultRenderer(Ficha.class, new ColorRenderer());
+		table.setDefaultRenderer(Piece.class, new ColorRenderer());
 
 		frame.getContentPane().setLayout(
 				new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
@@ -142,7 +142,7 @@ public class GraphicalBoard {
 		frame.setVisible(true);
 
 		// FIXME
-		if (game.getCurrentGame().getTurno() == Jugador.ENEMIGO) {
+		if (game.getCurrentGame().getTurn() == Player.ENEMY) {
 			ejecutarMovidaDeMaquina();
 		}
 
@@ -163,11 +163,11 @@ public class GraphicalBoard {
 
 			if (origen == null) {
 
-				origen = new Punto(fila, columna);
+				origen = new Point(fila, columna);
 
 			} else {
 
-				destino = new Punto(fila, columna);
+				destino = new Point(fila, columna);
 
 				if (origen.equals(destino)) {
 					table.clearSelection();
@@ -212,13 +212,13 @@ public class GraphicalBoard {
 		lblError.setText("");
 	}
 
-	private void ejecutarMovidaDeJugador(Punto origen, Punto destino) {
+	private void ejecutarMovidaDeJugador(Point origen, Point destino) {
 
 		try {
 
-			Jugador result;
+			Player result;
 
-			result = game.getCurrentGame().mover(origen, destino);
+			result = game.getCurrentGame().move(origen, destino);
 			if (result != null) {
 				gameOver(result);
 			}
@@ -226,10 +226,10 @@ public class GraphicalBoard {
 		} catch (BoardPointOutOfBoundsException e1) {
 			lblError.setText("Las coordenadas ingresadas son invalidas");
 			return;
-		} catch (MovimientoBloqueadoException e1) {
+		} catch (BlockedMoveException e1) {
 			lblError.setText("El movimiento esta bloqueado.");
 			return;
-		} catch (MovimientoInvalidoException e1) {
+		} catch (InvalidMoveException e1) {
 			lblError.setText("El movimiento es invalido.");
 			return;
 		} finally {
@@ -254,7 +254,7 @@ public class GraphicalBoard {
 
 	private void ejecutarMovidaDeMaquina() {
 
-		Jugador result = game.ejecutarMovida();
+		Player result = game.ejecutarMovida();
 
 		if (result != null) {
 
@@ -263,10 +263,10 @@ public class GraphicalBoard {
 
 	}
 
-	private void gameOver(Jugador jugador) {
+	private void gameOver(Player jugador) {
 
 		System.out.println("El jugador " + jugador + " ha ganado");
-		if (jugador == Jugador.GUARDIA) {
+		if (jugador == Player.GUARD) {
 			lblGameOver.setForeground(Color.BLUE);
 		}
 		lblGameOver.setText("EL JUGADOR " + jugador + " HA GANADO");
@@ -292,7 +292,7 @@ public class GraphicalBoard {
 
 		@Override
 		public Class<?> getColumnClass(int columnIndex) {
-			return Ficha.class;
+			return Piece.class;
 		}
 
 		@Override
@@ -337,7 +337,7 @@ public class GraphicalBoard {
 
 			char fichaChar = (char) fichaObject;
 
-			Ficha ficha = Ficha.fromChar(fichaChar);
+			Piece ficha = Piece.fromChar(fichaChar);
 
 			setText("" + fichaChar);
 
@@ -345,27 +345,27 @@ public class GraphicalBoard {
 
 			switch (ficha) {
 
-			case REY:
+			case KING:
 				newColor = Color.YELLOW;
 				break;
 
-			case CASTILLO:
+			case CASTLE:
 				newColor = Color.GRAY;
 				break;
 
-			case ENEMIGO:
+			case ENEMY:
 				newColor = Color.RED;
 				break;
 
-			case GUARDIA:
+			case GUARD:
 				newColor = Color.BLUE;
 				break;
 
-			case TRONO:
+			case THRONE:
 				newColor = Color.CYAN;
 				break;
 
-			case VACIO:
+			case EMPTY:
 				break;
 			default:
 				break;
