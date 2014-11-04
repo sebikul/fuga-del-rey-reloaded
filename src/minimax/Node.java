@@ -157,7 +157,7 @@ public class Node {
 				} catch (InvalidMoveException
 						| BoardPointOutOfBoundsException
 						| BlockedMoveException e) {
-					System.out.println("Nodo.getMovidaPorProfundidad()");
+					//System.out.println("Nodo.getMovidaPorProfundidad()");
 				}
 
 			}
